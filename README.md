@@ -1,7 +1,5 @@
 # RSM
 
-[![Build status](https://ci.appveyor.com/api/projects/status/cpjeexfdjcw7syd7?svg=true)](https://ci.appveyor.com/project/troyhill/sfnrc)
- [![Build Status](https://travis-ci.org/troyhill/SFNRC.svg?branch=master)](https://travis-ci.org/troyhill/SFNRC) [![codecov.io](https://codecov.io/github/troyhill/SFNRC/coverage.svg?branch=master)](https://codecov.io/github/troyhill/SFNRC?branch=master)
 
 
 The `RSM` R package provides utilities for analysis of RSM and MDRSM model output.

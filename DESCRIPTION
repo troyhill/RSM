@@ -1,0 +1,29 @@
+Package: RSM
+Type: Package
+Title: Utilities for synthesis of output from the Regional Simulation Model (RSM) and Miami-Dade RSM.
+Version: 0.0.01
+Date: 2019-12-18
+Authors@R: c(
+    person("Troy", "Hill", role = c("aut", "cre"), email = "Hill.Troy@gmail.com", comment = c(ORCID = "0000-0003-2980-4099")),
+    person("Gregg", "Reynolds", role = c("aut")),
+    person("Joseph", "Park", role = c("aut"))
+    )
+BugReports: https://github.com/troyhill/RSM/issues
+Description: Utilities for synthesis of output from the Regional Simulation Model (RSM) and Miami-Dade RSM. The package streamlines characterization of performance measures.
+License: file LICENSE
+URL: https://github.com/troyhill/RSM
+LazyData: true
+Depends:
+    R (>= 3.5.0),
+    ncdf4,
+    plyr,
+    sp,
+    rgdal
+    
+RoxygenNote: 6.1.1
+Suggests: 
+    covr,
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

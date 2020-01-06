@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+SFNRC.Rproj
+temp.txt
+^.*\\.png$
+.httr-oauth
+*.Rproj
+*.RData

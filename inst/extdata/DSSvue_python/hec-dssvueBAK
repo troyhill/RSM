@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /opt/physical/HEC-DSSVue/hec-dssvue201
+./hec-dssvue.sh $1

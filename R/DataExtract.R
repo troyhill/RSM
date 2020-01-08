@@ -60,9 +60,9 @@ DataExtract = function(
   file.dss.ini       = 'ExtractDss.ini',
   path.dss.py        = '../DSSvue_python/',
   file.dss.py        = 'ExtractDss.py',
-  data.path          = paste(baseDir,'/models/rsm',sep=''),
-  model.version      = 'vWERP',
-  model.alternative  = 'WALT3RNL',
+  data.path          = 'Y:/troy/RDATA/RSM_supplemental/inputFiles', # paste(baseDir,'/models/rsm',sep=''),
+  model.version      = 'rsm',
+  model.alternative  = 'COP/ECB19RR',
   indicator.region   = 'IR129',
   file.in            = 'globalmonitors.nc', # RSMGL_CEPP_output.dss, transect_flow.dss, etc.
   variable           = 'ComputedHead',

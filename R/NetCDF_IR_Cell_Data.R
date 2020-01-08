@@ -47,9 +47,9 @@
 #' 
 
 NetCDF_IR_Cell_Data  = function(
-  data.path          = paste0(baseDir,'/models/rsm'),
-  model.version      = 'vWERP',
-  model.alternative  = 'WALT3RNL',
+  data.path          =  'Y:/troy/RDATA/RSM_supplemental/inputFiles',
+  model.version      = 'rsm',
+  model.alternative  = 'COP/ECB19RR',
   indicator.region   = 'IR129',
   station.type       = 'IR',
   file.in            = 'globalmonitors.nc',
@@ -77,6 +77,7 @@ NetCDF_IR_Cell_Data  = function(
     IR.cell.list.file = IR.cell.list.file,
     indicator.region  = indicator.region,
     file.in           = file.in,
+    out.file          =  outFile, # list of indicator cell IDs created in NetCDF_Extract(). ELIMINATE THIS.
     variable          = variable,
     start.date        = start.date,
     end.date          = end.date,
@@ -98,7 +99,7 @@ NetCDF_IR_Cell_Data  = function(
   #tricons     = NetCDF.data[[ 'tricons'    ]]  # added by GR 10Dec2018; map of node IDs to cell IDs; 3 per cell
   #locations   = NetCDF.data[[ 'locations'  ]]  # added by GR 10Dec2018; coordinates of 2995 nodes defining mesh cells; use if converting from cfs/ft to cfs
   varData     = NetCDF.data[[ 'varData'    ]]
-  
+  cellIDData  = NetCDF.data[[ 'cellIDs'    ]]
   #--------------------------------------------------------------
   # Retreive list of RSM cell IDs for model.version & indicator.region
   # Example: L[['V235']][['IR129']] returns [ 4516 4517 4518 ]
@@ -123,17 +124,15 @@ NetCDF_IR_Cell_Data  = function(
   }
   
   if ( tolower(indicator.region) == 'rsmgl_cellids' | tolower(indicator.region) == 'nsrsm_cellids') {
-    IRList <- read.csv(outFile, header=T, sep=",")
+    IRList <- read.csv(outFile, header=T, sep=",") # cellIDData # outFile = "RSM/inst/extdata/tempCellIDs.csv"
     cell.list  <- as.vector(t(IRList$cellID))
-  }
-  else if ( tolower(station.type) == 'cell' ) {
+  } else if ( tolower(station.type) == 'cell' ) {
     cell.list <- as.vector(as.integer(as.character(indicator.region)))
     #    print(cell.list)
     #    print(str(cell.list))
     #    #print('to here')
     #    print('')
-  }
-  else {
+  }  else {
     IRList    <- read.csv(paste(IR.cell.list.path, IR.cell.list.file, sep = '/' ), header=T, sep=",")
     cell.list <- as.vector(t(subset(IRList, IR == indicator.region, select=c(cell))))
     #cell.list         = c( 1317, 1533, 1892, 2333, 2508, 3117, 3329, 2942 )

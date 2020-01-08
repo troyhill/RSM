@@ -33,7 +33,7 @@ unitConversion = function(
   data.source  <- tolower(data.source)
   
   ### argument checking
-  unit_options <- c("kaf", "kac-ft", "k-af", "cfs", "cms", "af", "mm", "cm", "m", "meters", "inch", "in", "inches")
+  unit_options <- c("kaf", "kac-ft", "k-af", "cfs", "cms", "af", "mm", "cm", "m", "meters", "inch", "in", "inches", "ft", "feet")
   if (!units %in% unit_options) stop(paste0("Units argument is not recognized. Acceptable inputs: ", paste(unit_options, collapse = ", ")))
   
   if ( units == 'k-af'  | units == 'kac-ft' ) {
@@ -107,7 +107,7 @@ unitConversion = function(
   } else if ( units == 'inch' | units == 'in' | units == 'inches' ) {
     cf <- 12.0
     
-  } else {
+  } else { # units == "feet" | units == "ft"
     print("reported units are same as model output ")
     cf <- 1.0
     

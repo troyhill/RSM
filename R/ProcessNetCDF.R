@@ -4,22 +4,22 @@
 #' 
 #' @param  data.type not sure
 #' @param  station.type station type. options: cell, gauge, structure, IR, transect
-#' @param  data.path          paste(baseDir,'/models/rsm',sep='')
-#' @param  model.version      'vWERP'
-#' @param  model.alternative  'WALT3RNL'
-#' @param  indicator.region   'IR129'
+#' @param  data.path          NULL
+#' @param  model.version      NULL
+#' @param  model.alternative  NULL
+#' @param  indicator.region   NULL
 #' @param  file.in            'globalmonitors.nc', # RSMGL_CEPP_output.dss, transect_flow.dss, etc.
-#' @param  variable           'ComputedHead'
-#' @param  land.surface.datum FALSE
-#' @param  rainFall           FALSE
-#' @param  datumOffset        0.0
-#' @param  file.out           'ComputedHead.csv'
-#' @param  out.path           tempdir()
+#' @param  variable           NULL
+#' @param  land.surface.datum NULL
+#' @param  rainFall           NULL
+#' @param  datumOffset        NULL
+#' @param  file.out           NULL
+#' @param  out.path           NULL
 #' @param outFile             tempfile(fileext = ".csv")
 #' @param start.date         '1965-01-01'
 #' @param end.date           '2005-12-31'
-#' @param IR.cell.list.path   '../../listsDB'
-#' @param IR.cell.list.file  'rsmWERPindicatorRegion.csv'
+#' @param IR.cell.list.path   NULL
+#' @param IR.cell.list.file  NULL
 #' @param indexOffset        Whether or not to add 1 to cell indices. Default =  TRUE
 #' @param  cell.list          c( 1317, 1533, 1892, 2333, 2508, 3117, 3329, 2942 )
 #' @param digits.precision   decimal places reported

@@ -70,8 +70,9 @@ cat(args, sep = "\n")
 #args <- c('./CTRLfiles/mapdiff_nsrsm_ECB19RR_cont-hp_0-ftOffset_annual.csv', '/opt/physical', 'null')
 
 stnDTfile  <- paste0(getwd(), "/inst/extdata/CTRLfiles/mapdiff_nsrsm_ECB19RR_cont-hp_0-ftOffset_annual.csv")
-baseDir    <- tempdir()
-maxRamp    <- args[3]                 # use 'null' if unrestricted color ramp range
+baseDir    <- "Y:/troy/RDATA/RSM_supplemental/inputFiles" # args[2]
+gisDir     <- paste(getwd(), "inst/extdata/gis/misc", sep = "/")
+maxRamp    <- "null" # args[3]                 # use 'null' if unrestricted color ramp range
 
 if(maxRamp != 'null') {
 
@@ -131,7 +132,7 @@ FUNdrydown <- function(x) {
 ##-- for every row of stn_dt list --##
 for (j in 1:length(verList)) {
   
-  dataDir <- paste(baseDir,'/models/',modelList[j],'/',verList[j],'/',altList[j],'/output', sep='')
+  dataDir <- paste(baseDir, modelList[j], verList[j], altList[j], 'output', sep='/')
 
   #- following only used for dss output (dataSourceList[j] == "dss") -#
   if(tolower(stationtypeList[j]) == "transect") {
@@ -167,7 +168,7 @@ for (j in 1:length(verList)) {
   print(end.date)
 #################################################################################################
   
-  dataDir      <- paste(baseDir,'/models/',modelList[j],'/',verList[j],'/',altList[j],'/output', sep='')
+  dataDir      <- paste(baseDir, modelList[j], verList[j], altList[j], 'output', sep='/')
   cellListFile <- paste(modelList[j],verList[j],'indicatorRegion.csv', sep='')
 
   if(dataSourceList[j] == "dss") {
@@ -204,18 +205,19 @@ for (j in 1:length(verList)) {
     file.dss.ini       = '/ExtractDss.ini',
     path.dss.py        = dssPath,
     file.dss.py        = '/ExtractDss.py',
-    #data.path          = paste(baseDir,'/models/rsm',sep=''),
-    data.path          = paste(baseDir,'/models/',modelVec[j],sep=''),
+    data.path          =  paste(baseDir, modelVec[j], sep='/'), #'Y:/troy/RDATA/RSM_supplemental/inputFiles',
+    # data.path          = paste(baseDir,'/models/',modelVec[j],sep=''),
     model.version      = verList[j],
     model.alternative  = altList[j],
     indicator.region   = as.character(stationList[j]),
-    file.in            = "Y:/troy/RDATA/RSM_supplemental/rsm_COP_ECB19RR/globalmonitors.nc", # paste0(getwd(), '/inst/extdata/globalmonitors.nc'), # RSMGL_CEPP_output.dss, transect_flow.dss, etc.
+    file.in            = "globalmonitors.nc", # paste0(getwd(), '/inst/extdata/globalmonitors.nc'), # RSMGL_CEPP_output.dss, transect_flow.dss, etc.
     variable           = variableDT,
     land.surface.datum = land.surface.datum,
     rainFall           = rainFall,
     datumOffset        = offsetList[j],
     file.out           = 'dataVals.csv',
     out.path           = '',
+    # outFile            = tempfile(fileext = ".csv"),
     #start.date         = NULL, # '1965-01-01',
     #end.date           = NULL, # '2005-12-31',
     start.date         = start.date,
@@ -329,7 +331,7 @@ if(paste(seasonDefine[2],'/',seasonDefine[3]) == paste(seasonDefine[5],'/',seaso
       setDT(valueDF, keep.rownames = TRUE)[]
       colnames(valueDF) <- c('station','value')
       
-    } else if ( tolower(statList[j]) == "max" ) {
+    } else if ( tolower(statList[j]) == "max" ) { ### Should this be a new if statement?? 
       valueDF <- as.data.frame(apply(dataVals, 2, max))
       setDT(valueDF, keep.rownames = TRUE)[]
       colnames(valueDF) <- c('station','value')
@@ -400,7 +402,7 @@ valueDFfull$station <- as.factor(valueDFfull$station)
 
 plotValuesTMP <- aggregate(valueDFfull$value, list(station=valueDFfull$station,valueDFfull$alt), mean) #mean of annual values for each alt
 plotValues1   <- subset(plotValuesTMP, plotValuesTMP$Group.2 == altList[1])
-plotValues2   <- subset(plotValuesTMP, plotValuesTMP$Group.2 == altList[2])                            #sort order should be same for each alt
+plotValues2   <- subset(plotValuesTMP, plotValuesTMP$Group.2 == altList[2]) # x shouldn't be entirely NA                           #sort order should be same for each alt
 plotValues    <- plotValues1
 
 plotValues1$CELLID <- str_split_fixed(plotValues1$station, "_", 2)[,2]
@@ -413,10 +415,13 @@ plotValues$CELLID <- str_split_fixed(plotValues$station, "_", 2)[,2]
 plotValues <- data.frame(CELLID=plotValues$CELLID, value=plotValues$x)
 
 if(tolower(modelList[1]) == "nsrsm" ) {
-  grid <- readOGR(paste(baseDir,'/gis/models/',modelList[1],'/',verList[1], sep=''),"nsrsm_mesh_landuse")
-  
+  ### NSRSM mesh landuse layer
+  # grid <- readOGR(paste(baseDir, modelList[1], verList[1], sep='/'),"nsrsm_mesh_landuse")
+  grid <- readOGR(paste(getwd(), "inst/extdata/gis/nsrsm_v352/nsrsm_mesh_landuse.shp", sep = "/"))
 } else {      
-  grid <- readOGR(paste(baseDir,'/gis/models/',modelList[1],'/',verList[1], sep=''),"mesh")
+  ### non-NSRSM mesh
+  # grid <- readOGR(paste(baseDir,'/gis/models/',modelList[1],'/',verList[1], sep=''),"mesh")
+  grid <- readOGR(paste(getwd(), "inst/extdata/gis/COP_mesh/mesh.shp", sep = "/"))
 }
 
 grid <- spTransform(grid, CRS("+proj=utm +zone=17 +datum=NAD83"))
@@ -425,10 +430,12 @@ grid <- spTransform(grid, CRS("+proj=utm +zone=17 +datum=NAD83"))
 grid1 <- grid    # grid1 should be nsrsm if not comparing two rsm runs
 
 if(tolower(modelList[2]) == "nsrsm" ) {
-  grid2 <- readOGR(paste(baseDir,'/gis/models/',modelList[2],'/',verList[2], sep=''),"nsrsm_mesh_landuse")
-  
+  # grid2 <- readOGR(paste(baseDir,'/gis/models/',modelList[2],'/',verList[2], sep=''),"nsrsm_mesh_landuse")
+  grid2 <- readOGR(paste(getwd(), "inst/extdata/gis/nsrsm_v352/nsrsm_mesh_landuse.shp", sep = "/"))
 } else {      
-  grid2 <- readOGR(paste(baseDir,'/gis/models/',modelList[2],'/',verList[2], sep=''),"mesh")
+  ### non-NSRSM mesh
+  # grid2 <- readOGR(paste(baseDir,'/gis/models/',modelList[2],'/',verList[1], sep=''),"mesh")
+  grid2 <- readOGR(paste(getwd(), "inst/extdata/gis/COP_mesh/mesh.shp", sep = "/"))
 }
 
 grid2 <- spTransform(grid2, CRS("+proj=utm +zone=17 +datum=NAD83"))
@@ -538,27 +545,18 @@ PMgridpoints$value <- pmin(PMgridpoints$value, absMax)  # restrict above ground 
 gridMap  <- list("sp.polygons",grid2, col="grey", lwd=0.1, first=FALSE) # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
 rm(grid)
 
-CSSS <- readOGR(paste(baseDir,'/gis/ever', sep=''),"CSSS_habitat")
-CSSSMap  <- list("sp.polygons",CSSS, col="green", lwd=0.8, first=FALSE) # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
-rm(CSSS)
+#CSSS <- readOGR(paste(baseDir,'/gis/ever', sep=''),"CSSS_habitat")
+CSSSMap  <- list("sp.polygons", readOGR(gisDir,"CSSS_habitat"), col="green", lwd=0.8, first=FALSE) # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
 
-CSSSext <- readOGR(paste(baseDir,'/gis/ever', sep=''),"SubpopAExt")
-CSSSextMap  <- list("sp.polygons",CSSSext, col="green", lwd=0.8, first=FALSE) # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
-rm(CSSSext)
+# CSSSext <- readOGR(paste(baseDir,'/gis/ever', sep=''),"SubpopAExt")
+CSSSextMap  <- list("sp.polygons",readOGR(gisDir,"SubpopAExt"), col="green", lwd=0.8, first=FALSE) # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
 
-coastlineMap <- readOGR(paste(baseDir,'/gis/ever', sep=''),"ParkCoastlines")
-baseMap  <- list("sp.lines",coastlineMap, col="grey") # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
-rm(coastlineMap)
+# coastlineMap <- readOGR(paste(baseDir,'/gis/ever', sep=''),"ParkCoastlines")
+baseMap  <- list("sp.lines", readOGR(gisDir,"ParkCoastlines"), col="grey") # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
 
-canals <- readOGR(paste(baseDir,'/gis/ever', sep=''),"MajorCanals")
+canalMap <- list("sp.lines", readOGR(gisDir,"MajorCanals"), col="blue") # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
 
-canalMap <- list("sp.lines",canals, col="blue") # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
-rm(canals)
-
-roads <- readOGR(paste(baseDir,'/gis/ever', sep=''),"MajorRoadsSouthFlorida")
-
-roadMap <- list("sp.lines",roads, col="brown") # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
-rm(roads)
+roadMap <- list("sp.lines", readOGR(gisDir,"MajorRoadsSouthFlorida"), col="brown") # to overlay, use sp.lines for SpatialLines object, sp.points for SpatialPoints object, & sp.text for text
 
 #uniqAlt <- length(unique(valuesSort$alt))
 altVec       <- as.vector(unique(altList))
@@ -733,23 +731,29 @@ seasonName <- gsub('-','~',seasonTitle)
 seasonName <- gsub('/','-',seasonName)
 seasonName <- gsub(' ','',seasonName)
 
-plotdir <- '../maps/png/'
-mapName <- paste(plotdir,'map-diff_',altsfn,'_',seasonName,'_',statsfn,'_',datatypesfn,'_',offsetsfn,"'-offset.png", sep="")
-
-png( file = mapName, width = 8.5, height = 11, units = "in", pointsize = 12, bg = "white",  res = 300 )
+# plotdir <- '../maps/png/'
+# mapName <- paste(plotdir,'map-diff_',altsfn,'_',seasonName,'_',statsfn,'_',datatypesfn,'_',offsetsfn,"'-offset.png", sep="")
+# 
+# png( file = mapName, width = 8.5, height = 11, units = "in", pointsize = 12, bg = "white",  res = 300 )
 
 a <- spplot(PMgridpoints,"value", col=NA, sp.layout=list(gridMap,baseMap,canalMap,roadMap,CSSSMap,CSSSextMap), xlim = edges[1, ], ylim = edges[2, ], main=title, at=at, colorkey=list(labels=colorKey), col.regions=pal(colorKeyCuts)) 
 
 print(a)
-dev.off()
+# dev.off()
+#
+# plotdir <- '../maps/pdf/'
+# mapName <- paste(plotdir,'map-diff_',altsfn,'_',seasonName,'_',statsfn,'_',datatypesfn,'_',offsetsfn,"'-offset.pdf", sep="")
+# pdf( file = mapName)
+# a <- spplot(PMgridpoints,"value", col=NA, sp.layout=list(gridMap,baseMap,canalMap,roadMap,CSSSMap,CSSSextMap), xlim = edges[1, ], ylim = edges[2, ], main=list(title, cex=0.9), at=at, colorkey=list(labels=colorKey), col.regions=pal(colorKeyCuts))
+# 
+# print(a)
+# dev.off()
 
-plotdir <- '../maps/pdf/'
-mapName <- paste(plotdir,'map-diff_',altsfn,'_',seasonName,'_',statsfn,'_',datatypesfn,'_',offsetsfn,"'-offset.pdf", sep="")
-pdf( file = mapName)
-a <- spplot(PMgridpoints,"value", col=NA, sp.layout=list(gridMap,baseMap,canalMap,roadMap,CSSSMap,CSSSextMap), xlim = edges[1, ], ylim = edges[2, ], main=list(title, cex=0.9), at=at, colorkey=list(labels=colorKey), col.regions=pal(colorKeyCuts)) 
 
-print(a)
-dev.off()
+# Compare with verified result --------------------------------------------
+# load("Y:/troy/RDATA/RSM_check1.RData")
+# identical(PMgridpoints$value, PMgridpoints_verified$value)
+# all.equal(PMgridpoints, PMgridpoints_verified)
 
 #########################################################################################################################
 print('warnings: ')

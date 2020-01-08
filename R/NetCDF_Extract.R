@@ -21,9 +21,9 @@
 #'        Add ability to process multiple variables?
 #'        Add ability for arbitray timesteps?
 #' 
-#' @param data.path  paste0(baseDir,'/models/rsm')
-#' @param model.version  'vWERP'
-#' @param model.alternative  'WALT3RNL'
+#' @param data.path  'Y:/troy/RDATA/RSM_supplemental/inputFiles'
+#' @param model.version  'rsm'
+#' @param model.alternative  'COP/ECB19RR'
 #' @param indicator.region  'IR129'
 #' @param file.in    'globalmonitors.nc'
 #' @param variable    'ComputedHead'
@@ -50,9 +50,9 @@
 
 # modified to include flow data #
 NetCDF_Extract = function(
-  data.path          = paste0(baseDir,'/models/rsm'),
-  model.version      = 'vWERP',
-  model.alternative  = 'WALT3RNL',
+  data.path          = 'Y:/troy/RDATA/RSM_supplemental/inputFiles',
+  model.version      = 'rsm',
+  model.alternative  = 'COP/ECB19RR',
   indicator.region   = 'IR129',
   file.in            = 'globalmonitors.nc',
   variable           = 'olvector',
@@ -128,7 +128,11 @@ NetCDF_Extract = function(
   print( 'head cellIDs:' ); print( tmpCellIDdf[1:min(dim(tmpCellIDdf)[1],10), 1:min(dim(tmpCellIDdf)[2],10) ])
   
   #write.table(tmpCellIDdf,file=tmpCellIDfile, sep = ",")
+  
+  #######################
+  ### ELIMINATE THIS LINE.
   write.table(tmpCellIDdf, file = out.file, row.names=F, col.names=T)
+  #######################
   
   # Add +1 to the index values; netCDF index starts at zero, R starts at 1
   if ( indexOffset ) {
@@ -365,6 +369,7 @@ NetCDF_Extract = function(
   return( list( Dates      = Dates,       # class: Date
                 dimensions = dimensions,  # class: integer vector
                 cellmap    = cellmap,     # class: matrix
-                varData    = varData ) )  # class: vector or matrix
+                varData    = varData,
+                cellIDs    = tmpCellIDdf) )  # class: vector or matrix
 }
 

@@ -87,7 +87,7 @@ DataExtract = function(
   df = NULL
   
   station.type <- tolower(station.type)
-  graph_type   <- tolower(graph_type)
+  #graph_type   <- tolower(graph_type)
   data.source  <- tolower(data.source)
   
   if ( 'netcdf' %in% data.source ) {

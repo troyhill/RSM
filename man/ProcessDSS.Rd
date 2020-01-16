@@ -28,8 +28,6 @@ ProcessDSS(
 \item{end.date}{'2005-12-31'}
 
 \item{DEBUG}{not sure what this is for}
-
-\item{digits.precision}{decimal places reported}
 }
 \value{
 not sure

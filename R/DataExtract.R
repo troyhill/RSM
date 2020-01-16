@@ -7,8 +7,9 @@
 #' file to out.path/file.out, and returns a data.frame.
 #' ProcessDSS() is governed by a .ini file (path.dss.ini/file.dss.ini) writes a .csv file, returns NULL. 
 #' 
-#' @param  data.source can be "dss" or "netcdf"
-#' @param  station.type station type. options: cell, gauge, structure, IR, transect
+#' @param  data.source        can be "dss" or "netcdf"
+#' @param  data.type          can be one of the following: stage, flow, vector
+#' @param  station.type       station type. options: cell, gauge, structure, IR, transect
 #' @param  path.dss.ini       '../DSSvue_python/',
 #' @param  file.dss.ini       'ExtractDss.ini',
 #' @param  path.dss.py        '../DSSvue_python/',
@@ -37,6 +38,9 @@
 #' @return not sure.
 #'
 #' @importFrom utils read.csv
+#' @importFrom utils head
+#' @importFrom utils tail
+#' @importFrom utils str
 #' 
 #' @export
 #' 
@@ -153,13 +157,13 @@ DataExtract = function(
           print(start.date)
           print(end.date)
           print('df test before: ')
-          print(head(df))
+          print(utils::head(df))
           print(str(df))
           df      <- df[ which(df$date >= start.date), ]
           df      <- df[ which(df$date <= end.date),   ]
           print('df test: ')
-          print(head(df))
-          print(tail(df))
+          print(utils::head(df))
+          print(utils::tail(df))
 
   } else if ( 'dss' %in% tolower( data.source ) ) {
 
@@ -176,12 +180,12 @@ DataExtract = function(
       end.date     = end.date,
       DEBUG        = DEBUG )
 
-    if (file.exists(paste(outPath,'/extracted_dss.csv', sep=''))) {
+    if (file.exists(paste(out.path,'/extracted_dss.csv', sep=''))) {
 
        print('foundID')
 #       print(foundID)
        #print(paste(outPath,'/extracted_dss.csv', sep=''))
-       df           <- read.csv(paste(outPath,'/extracted_dss.csv', sep=''), header = FALSE, sep = ",")
+       df           <- read.csv(paste(out.path,'/extracted_dss.csv', sep=''), header = FALSE, sep = ",")
        df           <- df[5:length(df[ ,1]), ]
        df           <- df[ ,c(2,4)]
        colnames(df) <- c('date','value')
@@ -200,13 +204,13 @@ DataExtract = function(
         print(start.date)
         print(end.date)
         print('df test before: ')
-        print(head(df))
-        print(str(df))
+        print(utils::head(df))
+        print(utils::str(df))
         df <- df[ which(df$date >= start.date), ]
         df <- df[ which(df$date <= end.date),   ]
         print('df test: ')
-        print(head(df))
-        print(tail(df))
+        print(utils::head(df))
+        print(utils::tail(df))
         #write.table(format(df, scientific=FALSE),file="/opt/physical/ML/graphics_new/fork/src/R_utils/df2.csv",sep=",",row.names=FALSE,col.names=T)
     ###############################################################################
 
@@ -215,7 +219,7 @@ DataExtract = function(
        print('station ID not found')
        # CHANGE THIS TO RETURN DATAFRAME with null values #
 
-       df <- utils::read.csv(paste(outPath,'/extracted_dss_nul.csv', sep=''), header = FALSE, sep = ",")
+       df <- utils::read.csv(paste(out.path,'/extracted_dss_nul.csv', sep=''), header = FALSE, sep = ",")
        #df <- read.csv(paste(outPath,'/extracted_dss_nil.csv', sep=''), header = FALSE, sep = ",")
        #df <- df[FALSE,]  # blank df for missing station
        #df <- data.frame(date = character(0), value = numeric(0))
@@ -224,7 +228,7 @@ DataExtract = function(
        df           <- df[ ,c(2,4)]
        colnames(df) <- c('date','value')
        print('head df')
-       print(head(df))
+       print(utils::head(df))
        # split date and convert month mmm to number #
        dateDefine           <- data.frame(do.call('rbind', strsplit(as.character(df$date),' ',fixed=TRUE)))
        colnames(dateDefine) <- c('day','month','year')
@@ -239,13 +243,13 @@ DataExtract = function(
        print(start.date)
        print(end.date)
        print('df test before: ')
-       print(head(df))
-       print(str(df))
+       print(utils::head(df))
+       print(utils::str(df))
        df <- df[ which(df$date >= start.date), ]
        df <- df[ which(df$date <= end.date),   ]
        print('df test: ')
-       print(head(df))
-       print(tail(df))
+       print(utils::head(df))
+       print(utils::tail(df))
        #write.table(format(df, scientific=FALSE),file="/opt/physical/ML/graphics_new/fork/src/R_utils/df.csv",sep=",",row.names=FALSE,col.names=T)
 
     }

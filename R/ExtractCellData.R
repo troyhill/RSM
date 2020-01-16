@@ -5,7 +5,7 @@
 #' @param variable    'ComputedHead'
 #' @param Dates  not sure
 #' @param dimensions  not sure
-#' @param var.data  not sure
+#' @param varData  not sure
 #' @param cell.list   not sure
 #' @param cell.indices   not sure
 #' @param digits.precision decimal places reported
@@ -18,6 +18,9 @@
 #' @importFrom ncdf4 ncatt_get
 #' @importFrom ncdf4 ncvar_get
 #' @importFrom utils write.table
+#' @importFrom utils head
+#' @importFrom utils tail
+#' @importFrom utils str
 #' 
 #' @export
 #' 
@@ -50,11 +53,11 @@ ExtractCellData = function(
   }
   
   print('cell.indices:')
-  print(head(cell.indices))
+  print(utils::head(cell.indices))
   print('varData:')
-  print(head(varData))
+  print(utils::head(varData))
   print('str varData: ')
-  print(str(varData))
+  print(utils::str(varData))
   print('is matrix?:')
   print(is.matrix(varData))
   print('length passed dimensions:')

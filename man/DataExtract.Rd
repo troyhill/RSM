@@ -37,6 +37,8 @@ DataExtract(
 \arguments{
 \item{data.source}{can be "dss" or "netcdf"}
 
+\item{data.type}{can be one of the following: stage, flow, vector}
+
 \item{station.type}{station type. options: cell, gauge, structure, IR, transect}
 
 \item{path.dss.ini}{'../DSSvue_python/',}

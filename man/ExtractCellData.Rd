@@ -21,13 +21,13 @@ ExtractCellData(
 
 \item{dimensions}{not sure}
 
+\item{varData}{not sure}
+
 \item{cell.list}{not sure}
 
 \item{cell.indices}{not sure}
 
 \item{digits.precision}{decimal places reported}
-
-\item{var.data}{not sure}
 }
 \value{
 a dataframe.

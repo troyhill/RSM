@@ -10,7 +10,6 @@
 #' @param file.dss.ini NULL by default
 #' @param start.date         '1965-01-01'
 #' @param end.date           '2005-12-31'
-#' @param digits.precision   decimal places reported
 #' @param DEBUG              not sure what this is for
 #'
 #'

@@ -53,6 +53,8 @@ NetCDF_IR_Cell_Data(
 
 \item{indicator.region}{'IR129'}
 
+\item{station.type}{station type. options: cell, gauge, structure, IR, transect}
+
 \item{file.in}{'globalmonitors.nc'}
 
 \item{variable}{'ComputedHead'}

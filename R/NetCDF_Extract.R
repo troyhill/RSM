@@ -42,6 +42,9 @@
 #' @importFrom ncdf4 ncatt_get
 #' @importFrom ncdf4 ncvar_get
 #' @importFrom utils write.table
+#' @importFrom utils head
+#' @importFrom utils str
+#' @importFrom stats complete.cases
 #' 
 #' @export
 #' 
@@ -119,8 +122,8 @@ NetCDF_Extract = function(
   
   cellmap               <- t( ncdf4::ncvar_get( ncdf, ncdf $ var[[ 'cellmap' ]] ) )
   colnames( cellmap )   <- c( 'cellID', 'index' )
-  str(cellmap)
-  head(cellmap)
+  utils::str(cellmap)
+  utils::head(cellmap)
   print('creating CellID list')
   # tmpCellIDfile         <- 'tmpCellIDs.csv'
   tmpCellIDdf           <- data.frame(cellID=as.character(cellmap[ ,1]))
@@ -256,19 +259,19 @@ NetCDF_Extract = function(
     
     cellmapdft      <- as.data.frame(cellmap)
     print('cellmapdft: ')
-    print(head(cellmapdft))
+    print(utils::head(cellmapdft))
     colnames(cellmapdft) <- c('cellID', 'index')
     triconsmapdft   <- as.data.frame(tricons)
     print('triconsmapdft: ')
-    print(head(triconsmapdft))
+    print(utils::head(triconsmapdft))
     colnames(triconsmapdft) <- c('tricon1', 'tricon2', 'tricon3')
     locationsmapdft <- as.data.frame(locations)
     print('locationsmapdft: ')
-    print(head(locationsmapdft))
+    print(utils::head(locationsmapdft))
     colnames(locationsmapdft) <- c('location1', 'location2')
     meshNodeMapdft  <- as.data.frame(nodeMap)
     print('meshNodemapdft: ')
-    print(head(meshNodeMapdft))
+    print(utils::head(meshNodeMapdft))
     colnames(meshNodeMapdft) <- c('nodeID', 'index')
     
     ## nodeID to locations ##
@@ -287,7 +290,7 @@ NetCDF_Extract = function(
     
     print('node2cellMap dimensions: ')
     print(dim(node2cellMap))  # should be 6719    4, not 6458    4
-    print(head(node2cellMap))
+    print(utils::head(node2cellMap))
     
     node1toCellID <- data.frame(cellID=node2cellMap$cellID, nodeID=node2cellMap$node1)
     node2toCellID <- data.frame(cellID=node2cellMap$cellID, nodeID=node2cellMap$node2)
@@ -300,9 +303,9 @@ NetCDF_Extract = function(
     cellID2Location2tmp <- merge(node2toCellID, node2Location, by="nodeID", all=T)
     cellID2Location3tmp <- merge(node3toCellID, node2Location, by="nodeID", all=T)
     
-    cellID2Location1 <- cellID2Location1tmp[complete.cases(cellID2Location1tmp[ ,2]), ]  # remove NAs for cellID only
-    cellID2Location2 <- cellID2Location2tmp[complete.cases(cellID2Location2tmp[ ,2]), ]  # remove NAs for cellID only
-    cellID2Location3 <- cellID2Location3tmp[complete.cases(cellID2Location3tmp[ ,2]), ]  # remove NAs for cellID only
+    cellID2Location1 <- cellID2Location1tmp[stats::complete.cases(cellID2Location1tmp[ ,2]), ]  # remove NAs for cellID only
+    cellID2Location2 <- cellID2Location2tmp[stats::complete.cases(cellID2Location2tmp[ ,2]), ]  # remove NAs for cellID only
+    cellID2Location3 <- cellID2Location3tmp[stats::complete.cases(cellID2Location3tmp[ ,2]), ]  # remove NAs for cellID only
     print('cellID2Location3 dimensions: ')
     print(dim(cellID2Location3))
     

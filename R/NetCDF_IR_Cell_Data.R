@@ -7,22 +7,23 @@
 #' Subset the variable data from the indicator.region cells.
 #' Write the data.frame to file.out as a .csv file and returns the data.frame. 
 #' 
-#' @param data.path  paste0(baseDir,'/models/rsm')
-#' @param model.version  'vWERP'
-#' @param model.alternative  'WALT3RNL'
-#' @param indicator.region  'IR129'
-#' @param file.in    'globalmonitors.nc'
-#' @param variable    'ComputedHead'
-#' @param file.out  'ComputedHead.csv'
-#' @param out.path  tempdir()
-#' @param outFile tempfile(fileext = ".csv")
-#' @param start.date  '1965-01-01'
-#' @param end.date   '2005-12-31'
-#' @param IR.cell.list.path   '../../listsDB'
-#' @param IR.cell.list.file  'rsmWERPindicatorRegion.csv'
-#' @param indexOffset Whether or not to add 1 to cell indices. Default =  TRUE
-#' @param digits.precision decimal places reported
-#' @param DEBUG not sure what this is for
+#' @param data.path            paste0(baseDir,'/models/rsm')
+#' @param model.version        'vWERP'
+#' @param model.alternative    'WALT3RNL'
+#' @param indicator.region     'IR129'
+#' @param station.type         station type. options: cell, gauge, structure, IR, transect
+#' @param file.in              'globalmonitors.nc'
+#' @param variable             'ComputedHead'
+#' @param file.out             'ComputedHead.csv'
+#' @param out.path             tempdir()
+#' @param outFile              tempfile(fileext = ".csv")
+#' @param start.date           '1965-01-01'
+#' @param end.date             '2005-12-31'
+#' @param IR.cell.list.path    '../../listsDB'
+#' @param IR.cell.list.file    'rsmWERPindicatorRegion.csv'
+#' @param indexOffset          Whether or not to add 1 to cell indices. Default =  TRUE
+#' @param digits.precision     decimal places reported
+#' @param DEBUG                not sure what this is for
 #'
 #' @return a dataframe. The 2-D data frame will have columns of: Date, Cell_ID, Cell_ID,... 
 #' Date       Cell_4516 Cell_4517 Cell_4518 Cell_4512
@@ -42,6 +43,8 @@
 #' @importFrom ncdf4 ncvar_get
 #' @importFrom utils write.table
 #' @importFrom utils write.csv
+#' @importFrom utils head
+#' @importFrom utils str
 #' 
 #' @export
 #' 
@@ -59,8 +62,8 @@ NetCDF_IR_Cell_Data  = function(
   outFile            = tempfile(fileext = ".csv"),
   start.date         = '1965-01-01',
   end.date           = '2005-12-31',
-  IR.cell.list.path  = '../../listsDB',
-  IR.cell.list.file  = 'rsmWERPindicatorRegion.csv',
+  IR.cell.list.path  = dirname(system.file("extdata", "rsmWERPindicatorRegion.lst", package = "RSM")), # '../../listsDB',
+  IR.cell.list.file  = system.file("extdata", "rsmWERPindicatorRegion.lst", package = "RSM"),          # 'rsmWERPindicatorRegion.csv',
   indexOffset        = TRUE, # Add +1 to cell indices?
   digits.precision   = 3, 
   DEBUG              = TRUE
@@ -134,11 +137,11 @@ NetCDF_IR_Cell_Data  = function(
     #    print('')
   }  else {
     IRList    <- read.csv(paste(IR.cell.list.path, IR.cell.list.file, sep = '/' ), header=T, sep=",")
-    cell.list <- as.vector(t(subset(IRList, IR == indicator.region, select=c(cell))))
+    cell.list <- as.vector(t(subset(IRList, IR == indicator.region, select=c(cell))))                       ### possible source of a note: IR and cell are not defined
     #cell.list         = c( 1317, 1533, 1892, 2333, 2508, 3117, 3329, 2942 )
     #    print(cell.list)
     print('head cell list: ')
-    print(head(cell.list))
+    print(utils::head(cell.list))
     #    print(str(cell.list))
     #    print('')
   }
@@ -168,13 +171,13 @@ NetCDF_IR_Cell_Data  = function(
   
   if ( DEBUG ) {
     #    #print( 'cell.list:'   ); print( cell.list     )
-    print( 'cell.list str:'); print(str(cell.list) )
+    print( 'cell.list str:'); print(utils::str(cell.list) )
     #print( paste( 'head cell.list:' ) ); print( cell.list[1:min(dim(cell.list)[1],10)] )
     #    #print( 'cell.list.i'  ); print( cell.list.i   )
-    print( 'cell.list.i str:'); print(str(cell.list.i) )
+    print( 'cell.list.i str:'); print(utils::str(cell.list.i) )
     #print( paste( 'head cell.list.i:' ) ); print( cell.list.i[1:min(dim(cell.list.i)[1],10)] )
     #    #print( 'cell.indices' ); print( cell.indices  )
-    print( 'cell.indices str:'); print(str(cell.indices) )
+    print( 'cell.indices str:'); print(utils::str(cell.indices) )
     #print( paste( 'head cell.indices:' ) ); print( cell.indices[1:min(dim(cell.list.i)[1],10)] )
     
     print( 'NetCDF_Extract returns varData dimensions' ); print( dimensions )

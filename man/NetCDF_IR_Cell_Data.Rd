@@ -17,8 +17,10 @@ NetCDF_IR_Cell_Data(
   outFile = tempfile(fileext = ".csv"),
   start.date = "1965-01-01",
   end.date = "2005-12-31",
-  IR.cell.list.path = "../../listsDB",
-  IR.cell.list.file = "rsmWERPindicatorRegion.csv",
+  IR.cell.list.path = dirname(system.file("extdata", "rsmWERPindicatorRegion.lst",
+    package = "RSM")),
+  IR.cell.list.file = system.file("extdata", "rsmWERPindicatorRegion.lst", package =
+    "RSM"),
   indexOffset = TRUE,
   digits.precision = 3,
   DEBUG = TRUE
@@ -37,8 +39,10 @@ NetCDF_IR_Cell_Data(
   outFile = tempfile(fileext = ".csv"),
   start.date = "1965-01-01",
   end.date = "2005-12-31",
-  IR.cell.list.path = "../../listsDB",
-  IR.cell.list.file = "rsmWERPindicatorRegion.csv",
+  IR.cell.list.path = dirname(system.file("extdata", "rsmWERPindicatorRegion.lst",
+    package = "RSM")),
+  IR.cell.list.file = system.file("extdata", "rsmWERPindicatorRegion.lst", package =
+    "RSM"),
   indexOffset = TRUE,
   digits.precision = 3,
   DEBUG = TRUE

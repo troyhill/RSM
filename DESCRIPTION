@@ -20,7 +20,8 @@ Depends:
     ggplot2,
     plyr,
     raster,
-    sf
+    sf,
+    fireHydro
 Remotes: troyhill/fireHydro
 RoxygenNote: 7.0.2
 Suggests: 

@@ -17,9 +17,11 @@
 #' 
 #' @examples 
 #' 
+#' \dontrun{
 #' dateList <- c(20200101:20200123)
 #' newDat   <- getEDENbyROI(targetLocations = pts,
 #'                          dateRange = dateList)
+#' }
 #' 
 #' @export
 #' 

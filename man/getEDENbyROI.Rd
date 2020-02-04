@@ -23,8 +23,10 @@ This function extracts EDEN data for spatial locations of interest. This functio
 }
 \examples{
 
+\dontrun{
 dateList <- c(20200101:20200123)
 newDat   <- getEDENbyROI(targetLocations = pts,
                          dateRange = dateList)
+}
 
 }

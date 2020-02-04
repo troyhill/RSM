@@ -19,7 +19,9 @@ Depends:
     sp,
     ggplot2,
     plyr,
-    raster
+    raster,
+    sf
+Remotes: troyhill/fireHydro
 RoxygenNote: 7.0.2
 Suggests: 
     covr,

@@ -14,8 +14,12 @@ License: file LICENSE
 URL: https://github.com/troyhill/RSM
 LazyData: true
 Depends:
-    R (>= 3.5.0),
-    ncdf4
+    R (>= 3.6.0),
+    ncdf4,
+    sp,
+    ggplot2,
+    plyr,
+    raster
 RoxygenNote: 7.0.2
 Suggests: 
     covr,

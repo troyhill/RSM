@@ -8,3 +8,4 @@ temp.txt
 .httr-oauth
 *.Rproj
 *.RData
+!\\data\\*.RData

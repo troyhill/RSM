@@ -9,4 +9,4 @@ temp.txt
 *.Rproj
 *.RData
 !\\data\\.*.RData
-!//data//.*.RData
+!data/*

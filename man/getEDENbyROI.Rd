@@ -24,9 +24,46 @@ This function extracts EDEN data for spatial locations of interest. This functio
 \examples{
 
 \dontrun{
+load("L:/Restoration Assessments/Non CERP Projects/COP/Position_analysis/data/data_indicatorRegions_20200204.RData")
+
+IR_pattern <- "WCA-1"
 dateList <- c(20200101:20200123)
-newDat   <- getEDENbyROI(targetLocations = pts,
-                         dateRange = dateList)
+
+### assign cluster categories to trace data
+sim_means <- polyDat$traceDataLong[!is.na(polyDat$traceDataLong$value), ] 
+### add grouping variable 
+sim_means$cluster <- sim_clusters[match(sim_means$simulation, sim_clusters$simulation), 1]
+
+ROIs <- IRMap[[2]][grepl(IRMap[[2]]$NAME, pattern = IR_pattern), ]
+targetLocationNames <- as.character(IRMap[[2]]$NAME[grepl(IRMap[[2]]$NAME, 
+                        pattern = IR_pattern)])
+
+### best practice: pull EDEN data separately  so it's retained in the global environment
+EDEN_data <- lapply(dateList, fireHydro::getEDEN)
+EDEN_by_IR <- getEDENbyROI(targetLocations = ROIs,
+                           targetLocationNames = targetLocationNames,
+                           dateRange = dateList, 
+                           needEDEN = EDEN_data)
+t.plot <- tracePlot(namesMatching = IR_pattern, simMeansObject = sim_means)
+
+t.plot
+
+t.plot + geom_line(data = EDEN_by_IR, mapping = aes(x = date, y = ave), size = 1.5)
+
+### Because EDEN data are now present in the working environment, 
+### it's trivial to repeat this for a new region of interest
+IR_pattern <- "WCA-3A North Central"
+ROIs <- IRMap[[2]][grepl(IRMap[[2]]$NAME, pattern = IR_pattern), ]
+targetLocationNames <- as.character(IRMap[[2]]$NAME[grepl(IRMap[[2]]$NAME, 
+                                    pattern = IR_pattern)])
+
+EDEN_by_IR <- getEDENbyROI(targetLocations = ROIs,
+              targetLocationNames = targetLocationNames,
+              dateRange = dateList, 
+              needEDEN = EDEN_data)
+              
+tracePlot(namesMatching = IR_pattern, simMeansObject = sim_means) + 
+   geom_line(data = EDEN_by_IR, mapping = aes(x = date, y = ave), size = 1.5)
 }
 
 }

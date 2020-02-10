@@ -1,23 +1,14 @@
-#' Simulation data extracted for 51 south Florida indicator regions used in development of the Combined Operational Plan
+#' @title Simulation data extracted for 51 south Florida indicator regions used in development of the Combined Operational Plan
 #'
-#' A list containing the output from running extractSimData() on EVER4CAST simulation data run beginning 20200101. The variables are as follows:
+#' @description A list containing the output from running \link[RSM]{extractSimData} on an EVER4CAST simulation dataset beginning 20200101. The variables are as follows:
 #'
 #' \itemize{
-#'   \item price. price in US dollars (\$326--\$18,823)
-#'   \item carat. weight of the diamond (0.2--5.01)
-#'   \item cut. quality of the cut (Fair, Good, Very Good, Premium, Ideal)
-#'   \item colour. diamond colour, from J (worst) to D (best)
-#'   \item clarity. a measurement of how clear the diamond is (I1 (worst), SI1, SI2, VS1, VS2, VVS1, VVS2, IF (best))
-#'   \item x. length in mm (0--10.74)
-#'   \item y. width in mm (0--58.9)
-#'   \item z. depth in mm (0--31.8)
-#'   \item depth. total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43--79)
-#'   \item table. width of top of diamond relative to widest point (43--95)
-#' }
-#'
-#' @docType data
-#' @keywords datasets
-#' @name diamonds
-#' @usage data(diamonds)
-#' @format A data frame with 53940 rows and 10 variables
+#'   \item listOfSims      a list of simulation data for each indicator region. The list is composed of a dataframe for each simulation (n = 100); each dataframe has a column for each indicator region (n = 51) and a row for each day (n = 182). Values are mean water depth within the indicator region.
+#'   \item listOfLocations a list of simulation data, re-organized. The list is composed of a dataframe for each indicator region (n = 51) with a row for each simulation (n = 100) and a column for each day (n = 181; first day is removed because it is identical in each simulation, creating a problem in cluster analysis)
+#'   \item traceDataWide.  a somewhat-wide dataframe, with a column for each indicator region (n = 51) and a row for each simulation (n = 100) and date (n = 182). Additional rows specify the simulation number and date. In total there are 18200 rows and 53 columns.
+#'   \item traceDataLong   a long dataframe, with one row for each unique combination of indicator region (n = 51), day (n = 182), and simulation (n = 100). There are 51x182x100 = 928,200 rows and five columns.
+#'   }
+#' @name polyDat 
+#' @usage data(polyDat)
+#' @format A list with four elements
 NULL

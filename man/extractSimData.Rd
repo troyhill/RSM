@@ -19,7 +19,7 @@ extractSimData(
 
 \item{targetLocationNames}{option to specify the name of target locations (e.g., pts$gage)}
 
-\item{func}{function to apply to the data  (if multiple raster cells are in location of interest)}
+\item{func}{function to apply to the data  (if multiple raster cells are in location of interest). The function name can be a character string or the function object (i.e., "mean" and mean produce identical output)}
 
 \item{beginDate}{the first date in the simulation time series}
 }

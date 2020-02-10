@@ -5,7 +5,7 @@
 #' @param simulationData       a list of netCDF simulation data in rasterStack format (e.g., "datList" object)
 #' @param targetLocations      locations to extract data from; must be class SpatialPointsDataFrame or SpatialPolygonsDataFrame
 #' @param targetLocationNames  option to specify the name of target locations (e.g., pts$gage)
-#' @param func                 function to apply to the data  (if multiple raster cells are in location of interest) 
+#' @param func                 function to apply to the data  (if multiple raster cells are in location of interest). The function name can be a character string or the function object (i.e., "mean" and mean produce identical output)
 #' @param beginDate            the first date in the simulation time series
 #'
 #' @return a list.
@@ -17,10 +17,10 @@
 #' (4) a long dataframe
 #'
 #' @importFrom stats reshape
-#' @importFrom graphics plot
+#' @importFrom raster plot
 #' @importFrom raster nlayers
-#' @importFrom sp spTransform
 #' @importFrom raster compareCRS
+#' @importFrom sp spTransform
 #' @importFrom sp CRS
 #' 
 #' @examples 
@@ -59,8 +59,8 @@ extractSimData <- function(simulationData,              # = datList,# *a list* o
     cat("Coordinate reference systems did not match. Conversion has been performed internally but may be incorrect (and result in NAs). \n")
   }
   
-  graphics::plot(simulationData[[1]][[1]], main = "Target locations used")
-  graphics::plot(targetLocations, add = TRUE)
+  raster::plot(simulationData[[1]][[1]], main = "Target locations used")
+  raster::plot(targetLocations, add = TRUE)
   
   cat("Extracting simulation data for each target location. This may take a while... \n")
   extracted.int   <- lapply(simulationData, function(x) { # takes a LONG time
@@ -75,6 +75,11 @@ extractSimData <- function(simulationData,              # = datList,# *a list* o
   sim_means_locs   <- mapply(cbind, extracted.int, "simulation" = 1:length(simulationData), SIMPLIFY = FALSE) # add an ID column to each element in the list
   traces_locs      <- do.call(rbind, sim_means_locs)
   traces_locs$date <- as.Date(beginDate, format = "%Y%m%d") + 1:raster::nlayers(simulationData[[1]])
+  
+  if (length(targetLocations) == 1) { # otherwise, name will appear as "t.raster..extract.x..y...targetLocations..fun...func..na.rm...TRUE.."
+    names(traces_locs)[1] <- "X1"
+  }
+  
   traces_locs_long <- stats::reshape(traces_locs, 
                               direction = "long",
                               varying = list(names(traces_locs)[1:c(ncol(traces_locs) - 2)]),

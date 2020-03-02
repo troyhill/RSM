@@ -10,3 +10,4 @@ temp.txt
 *.RData
 !\\data\\.*.RData
 !data/*
+\\docs\\Reynolds\\*.pdf$

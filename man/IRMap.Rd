@@ -2,7 +2,13 @@
 % Please edit documentation in R/IRMap.R
 \name{IRMap}
 \alias{IRMap}
-\title{A list with indicator region spatial data
+\title{A list with indicator region spatial data}
+\format{a list with indicator region spatial data}
+\usage{
+data(IRMap)
+}
+\description{
+A list with indicator region spatial data. 
 
 \itemize{
   \item un-named1 tba
@@ -10,11 +16,5 @@
   \item col color used in plotting
   \item lwd line thickness used in plotting
   \item first tba
-  }}
-\format{a list with indicator region spatial data}
-\usage{
-data(IRMap)
-}
-\description{
-IRMap Output from cluster analysis of the 100 simulations (all days) for the WCA-3A North Central indicator region.
+  }
 }

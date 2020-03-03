@@ -1,7 +1,7 @@
 Package: RSM
 Type: Package
 Title: Utilities for synthesis of output from the Regional Simulation Model (RSM) and Miami-Dade RSM
-Version: 0.0.01
+Version: 0.0.02
 Date: 2019-12-18
 Authors@R: c(
     person("Troy", "Hill", role = c("aut", "cre"), email = "Hill.Troy@gmail.com", comment = c(ORCID = "0000-0003-2980-4099")),
@@ -15,13 +15,15 @@ URL: https://github.com/troyhill/RSM
 LazyData: true
 Depends:
     R (>= 3.6.0),
-    ncdf4,
-    sp,
     ggplot2,
     plyr,
+    fireHydro,
+    ncdf4,
+    rgdal,
+    rgeos,
     raster,
     sf,
-    fireHydro
+    sp
 Remotes: troyhill/fireHydro
 RoxygenNote: 7.0.2
 Suggests: 

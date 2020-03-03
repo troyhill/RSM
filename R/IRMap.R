@@ -1,6 +1,7 @@
-#' @description IRMap Output from cluster analysis of the 100 simulations (all days) for the WCA-3A North Central indicator region. 
-#'
+#' 
 #' @title A list with indicator region spatial data
+#' 
+#' @description A list with indicator region spatial data. 
 #'
 #' \itemize{
 #'   \item un-named1 tba

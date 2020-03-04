@@ -1,0 +1,10 @@
+RSM version 0.0.04 (release date: TBD)
+==================
+Changes:
+* overhauled Gregg Reynolds' original core functions to reduce inputs and streamline behavior
+* retains deprecated versions of these functions
+
+RSM version 0.0.03 (release date: 2020-03-03)
+==================
+Changes:
+* added getCellID() to extract indicator region cell IDs from a model mesh 

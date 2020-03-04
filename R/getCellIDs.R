@@ -3,15 +3,18 @@
 #' @description Extracts cell IDs from a model mesh for each indicator region. Currently only supports spatialPolygonDataframes; spatialLines and spatialPoints have not been tested.
 #' 
 #'  
-#' @param  modelMesh        a spatialPolygonDataframe with model mesh cells and cell ID data
+#' @param  modelMesh        a spatialPolygonDataframe with model mesh cells and cell ID data (or, a character vector of the file address to be imported internally via rgdal::readOGR)
 #' @param  indicatorRegions          a spatialPolygonDataframe with indicator region data
 #' @param  overlay       specifies the method used to identify cells. "any" identifies cells that have any fraction falling within an indicator region (default protocol; cells are clipped to IR extents), "centroid" identifies included cells based on whether their centroid falls within an IR (cells are not currently clipped to IR extents) 
+#' @param modelName      name of the model mesh used (e.g., rsm, COP)
+#' @param versionName    name of the model version used (e.g., WERP)
 #'
 #' @return a dataframe with cell IDs, the corresponding indicator region names and other data. Specifically, the following columns must be present: from the indicator region data: "INDICATOR", "NAME". Columns required in the mesh data: "CellId", "Node1", "Node2", "Node3", "Topo_avg", "landuse"
 #'
 #' @importFrom rgdal  readOGR
 #' @importFrom sp     spTransform
 #' @importFrom sp     SpatialPointsDataFrame
+#' @importFrom sp     plot
 #' @importFrom rgeos  gCentroid
 #' @importFrom raster intersect
 #' @importFrom raster crs
@@ -24,12 +27,19 @@
 # old_path <- Sys.getenv("PATH") 
 # Sys.setenv(PATH = paste(old_path, "C:\\Rtools\\bin;C:\\Rtools\\gcc-4.6.3\\bin;C:\\Rtools\\perl\\bin;C:\\Rtools\\MinGW\\bin", sep = ";"))
 
-getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], overlay = "any") {
+getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], overlay = "any",
+                       modelName, versionName) {
   ### function to generate a list of cell IDs from (1) a spatialPolygonDataFrame of indicator regions, and (2) a shapefile with a model mesh
   ### TODO: add options to restrict criteria for qualifying cells - any fraction falling within an IR (current protocol; cells are clipped to IR extents), 
   ### (2) based on cell centroids (cells are *not* currently clipped to IR extents)
   
-  meshDat <- rgdal::readOGR(modelMesh) # paste(getwd(), "inst/extdata/gis/nsrsm_v352/nsrsm_mesh_landuse.shp", sep = "/"))
+  if(is.character(modelMesh)) {
+    meshDat <- rgdal::readOGR(modelMesh) # paste(getwd(), "inst/extdata/gis/nsrsm_v352/nsrsm_mesh_landuse.shp", sep = "/"))
+  } else if (class(modelMesh) %in% "SpatialPolygonsDataFrame") {
+    meshDat <- modelMesh
+  } else {
+    stop("modelMesh input is not supported. Object must be a spatialPolygonDataframe of the model mesh cells or a character vector of the address of the shapefile to be imported")
+  }
   IRDat   <- sp::spTransform(indicatorRegions, raster::crs(meshDat))
   
   # plot(meshDat)
@@ -44,11 +54,18 @@ getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], overlay = 
     IRs_only    <- raster::intersect(y = IRDat, x = meshDat_pts) 
   } else if (overlay %in% "any") {
     IRs_only <- raster::intersect(y = IRDat, x = meshDat) 
+  } else {
+    stop("overlay argument must be 'any' or 'centroid'. see ?getCellIDs for more detail.")
   }
   
-  # plot(IRs_only)
+  IRs_only@data$model   <- modelName
+  IRs_only@data$version <- versionName
   
-  invisible(IRs_only@data[, c("INDICATOR", "NAME", "CellId", "Node1", "Node2", "Node3", "Topo_avg", "landuse")])
+  par(mar= c(0,0,0,0))
+  sp::plot(IRDat, col = "skyblue")
+  sp::plot(IRs_only, pch = 19, cex = 0.4, add = TRUE)
+  
+  invisible(IRs_only@data[, c("model", "version", "INDICATOR", "CellId", "NAME", "Node1", "Node2", "Node3", "Topo_avg", "landuse")])
 }
 
 

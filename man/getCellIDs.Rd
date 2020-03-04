@@ -4,14 +4,24 @@
 \alias{getCellIDs}
 \title{getCellIDs}
 \usage{
-getCellIDs(modelMesh, indicatorRegions = RSM::IRMap[[2]], overlay = "any")
+getCellIDs(
+  modelMesh,
+  indicatorRegions = RSM::IRMap[[2]],
+  overlay = "any",
+  modelName,
+  versionName
+)
 }
 \arguments{
-\item{modelMesh}{a spatialPolygonDataframe with model mesh cells and cell ID data}
+\item{modelMesh}{a spatialPolygonDataframe with model mesh cells and cell ID data (or, a character vector of the file address to be imported internally via rgdal::readOGR)}
 
 \item{indicatorRegions}{a spatialPolygonDataframe with indicator region data}
 
 \item{overlay}{specifies the method used to identify cells. "any" identifies cells that have any fraction falling within an indicator region (default protocol; cells are clipped to IR extents), "centroid" identifies included cells based on whether their centroid falls within an IR (cells are not currently clipped to IR extents)}
+
+\item{modelName}{name of the model mesh used (e.g., rsm, COP)}
+
+\item{versionName}{name of the model version used (e.g., WERP)}
 }
 \value{
 a dataframe with cell IDs, the corresponding indicator region names and other data. Specifically, the following columns must be present: from the indicator region data: "INDICATOR", "NAME". Columns required in the mesh data: "CellId", "Node1", "Node2", "Node3", "Topo_avg", "landuse"

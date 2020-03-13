@@ -21,7 +21,8 @@
 #' load("L:/Restoration Assessments/Non CERP Projects/COP/Position_analysis/data/data_indicatorRegions_20200204.RData")
 #' 
 #' IR_pattern <- "WCA-1"
-#' dateList <- c(20200101:20200123)
+#' dateList <- format(seq.Date(from = as.Date("20200101", format = "%Y%m%d"), 
+#'             to = as.Date("20200109", format = "%Y%m%d"), by = "day"), format = "%Y%m%d")
 #' 
 #' ### assign cluster categories to trace data
 #' sim_means <- polyDat$traceDataLong[!is.na(polyDat$traceDataLong$value), ] 

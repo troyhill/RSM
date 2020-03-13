@@ -3,7 +3,9 @@
 \name{sim_clusters}
 \alias{sim_clusters}
 \title{sim_clusters Output from cluster analysis of the 100 simulations (all days) for the WCA-3A North Central indicator region.}
-\format{A dataframe with two columns}
+\format{
+A dataframe with two columns
+}
 \usage{
 data(sim_clusters)
 }

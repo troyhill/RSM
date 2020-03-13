@@ -3,7 +3,9 @@
 \name{polyDat}
 \alias{polyDat}
 \title{Simulation data extracted for 51 south Florida indicator regions used in development of the Combined Operational Plan}
-\format{A list with four elements}
+\format{
+A list with four elements
+}
 \usage{
 data(polyDat)
 }

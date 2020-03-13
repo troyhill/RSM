@@ -3,7 +3,9 @@
 \name{IRMap}
 \alias{IRMap}
 \title{A list with indicator region spatial data}
-\format{a list with indicator region spatial data}
+\format{
+a list with indicator region spatial data
+}
 \usage{
 data(IRMap)
 }

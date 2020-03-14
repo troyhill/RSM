@@ -5,7 +5,7 @@
 #' @param targetLocations      locations to extract data from; must be class SpatialPointsDataFrame or SpatialPolygonsDataFrame
 #' @param targetLocationNames  option to specify the name of target locations (e.g., pts$gage)
 #' @param dateRange            Date range for which to download EDEN data
-#' @param needEDEN             whether EDEN data is needed. either TRUE, or the name of the list of EDEN data generated from lapply(dateRange, fireHydro::getEDEN). 
+#' @param needEDEN             whether EDEN data is needed. either TRUE, or the name of the list of EDEN data generated from lapply(dateRange, fireHydro::getEDEN). Specifically, object is a list of lists with (1) a date (YYYYMMDD) and (2) EDEN data (sf multipolygon object). 
 #'
 #' @return a dataframe formatted identically to the traceDataLong output from extractSimData()
 #'

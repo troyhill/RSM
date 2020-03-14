@@ -84,6 +84,7 @@ extractSimData <- function(simulationData,              # = datList,# *a list* o
                               direction = "long",
                               varying = list(names(traces_locs)[1:c(ncol(traces_locs) - 2)]),
                               v.names = "value",
+                              timevar = "location_number",
                               idvar = c("simulation", "date"))
   newDF                 <- data.frame(time = 1:length(targetLocationNames), name = targetLocationNames)
   traces_locs_long$name <- newDF$name[match(traces_locs_long$time, newDF$time)]

@@ -6,9 +6,6 @@
 \format{
 A list with four elements
 }
-\usage{
-data(polyDat)
-}
 \description{
 A list containing the output from running \link[RSM]{extractSimData} on an EVER4CAST simulation dataset beginning 20200101. The variables are as follows:
 

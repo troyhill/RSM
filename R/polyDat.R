@@ -9,6 +9,5 @@
 #'   \item traceDataLong   a long dataframe, with one row for each unique combination of indicator region (n = 51), day (n = 182), and simulation (n = 100). There are 51x182x100 = 928,200 rows and five columns.
 #'   }
 #' @name polyDat 
-#' @usage data(polyDat)
 #' @format A list with four elements
 NULL

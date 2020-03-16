@@ -11,6 +11,5 @@
 #'   \item first tba
 #'   }
 #' @name IRMap
-#' @usage data(IRMap)
 #' @format a list with indicator region spatial data
 NULL

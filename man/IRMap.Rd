@@ -6,9 +6,6 @@
 \format{
 a list with indicator region spatial data
 }
-\usage{
-data(IRMap)
-}
 \description{
 A list with indicator region spatial data. 
 

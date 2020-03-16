@@ -6,9 +6,6 @@
 \format{
 A dataframe with two columns
 }
-\usage{
-data(sim_clusters)
-}
 \description{
 A dataframe grouping the 100 simulations into five clusters based on average water level.
 

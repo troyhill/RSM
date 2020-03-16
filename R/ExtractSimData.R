@@ -6,7 +6,7 @@
 #' @param targetLocations      locations to extract data from; must be class SpatialPointsDataFrame or SpatialPolygonsDataFrame
 #' @param targetLocationNames  option to specify the name of target locations (e.g., pts$gage)
 #' @param func                 function to apply to the data  (if multiple raster cells are in location of interest). The function name can be a character string or the function object (i.e., "mean" and mean produce identical output)
-#' @param beginDate            the first date in the simulation time series
+#' @param beginDate            disregarded; this is now determined internally. the first date in the simulation time series
 #'
 #' @return a list.
 #' This function extracts simulation data for spatial locations of interest (polygons, points)
@@ -67,6 +67,9 @@ extractSimData <- function(simulationData,              # = datList,# *a list* o
     x.df          <- data.frame(t(raster::extract(x, y = targetLocations, fun = func, na.rm = TRUE)))
     x.df
   })
+  
+  ### get start date from simulation data
+  sim_dates <- gsub(x = rownames(extracted.int[[1]]), pattern = "X|\\.", replacement = "" )
   # extracted.int   <- lapply(simulationData, function(x) { # takes a LONG time
   #   x.df          <- t(raster::extract(x, y = targetLocations, fun = func, na.rm = TRUE))
   #   x.df
@@ -74,7 +77,13 @@ extractSimData <- function(simulationData,              # = datList,# *a list* o
   # extracted.int    <- lapply(extracted.int, as.data.frame)
   sim_means_locs   <- mapply(cbind, extracted.int, "simulation" = 1:length(simulationData), SIMPLIFY = FALSE) # add an ID column to each element in the list
   traces_locs      <- do.call(rbind, sim_means_locs)
-  traces_locs$date <- as.Date(beginDate, format = "%Y%m%d") + 1:raster::nlayers(simulationData[[1]])
+  
+  ### first version:
+  # traces_locs$date <- as.Date(beginDate, format = "%Y%m%d") + 1:raster::nlayers(simulationData[[1]])
+  # dates.int  <- as.Date(strptime(as.character(beginDate), format = "%Y%m%d"))
+  ### 2nd version:
+  # traces_locs$date   <-  format(seq.Date(from = dates.int, to = dates.int + raster::nlayers(simulationData[[1]]), by = "day"), "%Y%m%d") 
+  traces_locs$date <- as.Date(strptime(as.character(sim_dates), format = "%Y%m%d"))
   
   if (length(targetLocations) == 1) { # otherwise, name will appear as "t.raster..extract.x..y...targetLocations..fun...func..na.rm...TRUE.."
     names(traces_locs)[1] <- "X1"
@@ -84,10 +93,10 @@ extractSimData <- function(simulationData,              # = datList,# *a list* o
                               direction = "long",
                               varying = list(names(traces_locs)[1:c(ncol(traces_locs) - 2)]),
                               v.names = "value",
-                              timevar = "location_number",
+                              timevar = "time", # change to "location_number" (requires updating package data (polyDat))
                               idvar = c("simulation", "date"))
-  newDF                 <- data.frame(time = 1:length(targetLocationNames), name = targetLocationNames)
-  traces_locs_long$name <- newDF$name[match(traces_locs_long$time, newDF$time)]
+  newDF                 <- data.frame(time = 1:length(targetLocationNames), name = targetLocationNames) # change "time" to "location_number"
+  traces_locs_long$name <- newDF$name[match(traces_locs_long$time, newDF$time)] # change "time" to "location_number"
   
   for (i in 1:length(targetLocations)) {
     if (i == 1) featureDat <- list()

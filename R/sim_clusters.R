@@ -7,6 +7,5 @@
 #'   \item simulation         a column with the simulation number
 #'   }
 #' @name sim_clusters
-#' @usage data(sim_clusters)
 #' @format A dataframe with two columns
 NULL

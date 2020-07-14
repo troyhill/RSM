@@ -1,10 +1,12 @@
 *.tex
+*.log
 *.pdf
 *.csv
 *.Rmd
 *.txt
 *.gri
 *.grd
+*.grd.aux.xml
 *.tif
 .Rproj.user
 .Rhistory

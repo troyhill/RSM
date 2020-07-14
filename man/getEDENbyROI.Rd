@@ -13,7 +13,7 @@ getEDENbyROI(targetLocations, targetLocationNames, dateRange, needEDEN = TRUE)
 
 \item{dateRange}{Date range to download EDEN data. Must be in \%Y\%m\%d (e.g., "20201231") format. This can be a character vector.}
 
-\item{needEDEN}{whether EDEN data is needed. either TRUE, or the name of the list of EDEN data generated from lapply(dateRange, fireHydro::getEDEN). Specifically, object is a list of lists with (1) a date (YYYYMMDD) and (2) EDEN data (sf multipolygon object).}
+\item{needEDEN}{whether EDEN data is needed. either TRUE, or the name of the list of EDEN data generated from lapply(dateRange, fireHydro::getEDEN). Specifically, object is a list of lists with (1) a date (YYYYMMDD) and (2) EDEN data (can be sf multipolygon object or rasterStack - much faster with rasterStack).}
 }
 \value{
 a dataframe formatted identically to the traceDataLong output from extractSimData()

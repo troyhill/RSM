@@ -5,7 +5,7 @@
 #' @param targetLocations      locations to extract data from; must be class SpatialPointsDataFrame or SpatialPolygonsDataFrame
 #' @param targetLocationNames  option to specify the name of target locations (e.g., pts$gage)
 #' @param dateRange            Date range to download EDEN data. Must be in \%Y\%m\%d (e.g., "20201231") format. This can be a character vector.
-#' @param needEDEN             whether EDEN data is needed. either TRUE, or the name of the list of EDEN data generated from lapply(dateRange, fireHydro::getEDEN). Specifically, object is a list of lists with (1) a date (YYYYMMDD) and (2) EDEN data (sf multipolygon object). 
+#' @param needEDEN             whether EDEN data is needed. either TRUE, or the name of the list of EDEN data generated from lapply(dateRange, fireHydro::getEDEN). Specifically, object is a list of lists with (1) a date (YYYYMMDD) and (2) EDEN data (can be sf multipolygon object or rasterStack - much faster with rasterStack). 
 #'
 #' @return a dataframe formatted identically to the traceDataLong output from extractSimData()
 #'
@@ -78,21 +78,41 @@ getEDENbyROI <- function(targetLocations,
   } else {
     stop("needEDEN argument not recognized. It should be either 'TRUE' (signaling that EDEN data should be pulled) or a list of EDEN data.")
   }
-  for (i in 1:length(targetLocations)) {
-    IR.tmp <- sapply(test, function(x) {
-      x.sf  <- x$data
-      a.sub <- sf::st_intersection(x.sf, sf::st_set_crs(sf::st_as_sf(targetLocations[i, ]), sf::st_crs(x.sf)))
-      mean(a.sub$WaterDepth, na.rm = TRUE)
-    })
-    dat.tmp <- data.frame(cluster  = "observed",
-                          name     = targetLocationNames[i],
-                          date     = as.Date(as.character(sapply(test, "[[", 1)), format = "%Y%m%d"),
-                          ave      = IR.tmp, 
-                          stdev    = 0)
-    if (i == 1) {
-      dat <- dat.tmp
-    } else {
-      dat <- rbind(dat, dat.tmp)
+  
+  if(any(class(test$data) %in% "RasterStack")) {
+    ### if test is a raster:
+    # calculate mean for each polygon
+    r.vals <- extract(test$data, targetLocations, df = TRUE, fun = mean)
+    ###
+    r.vals2         <- data.frame(t(r.vals))
+    r.vals2         <- r.vals2[-1, ]
+    names(r.vals2)  <- targetLocationNames
+    r.vals2$cluster <- "observed"
+    r.vals2$date    <- dateRange[1:nrow(r.vals2)]
+    
+    ### convert long to wide
+    dat <- stats::reshape(r.vals2, direction = "long", 
+                          varying = list(names(r.vals2)[1:length(targetLocationNames)]), 
+                          v.names = "ave", timevar = "name", 
+                          idvar = c("cluster", "date"))
+    dat$stdev   <- 0
+  } else if (any(class(test$data) %in% "sf")) {
+    for (i in 1:length(targetLocations)) {
+      IR.tmp <- sapply(test, function(x) {
+        x.sf  <- x$data
+        a.sub <- sf::st_intersection(x.sf, sf::st_set_crs(sf::st_as_sf(targetLocations[i, ]), sf::st_crs(x.sf)))
+        mean(a.sub$WaterDepth, na.rm = TRUE)
+      })
+      dat.tmp <- data.frame(cluster  = "observed",
+                            name     = targetLocationNames[i],
+                            date     = as.Date(as.character(sapply(test, "[[", 1)), format = "%Y%m%d"),
+                            ave      = IR.tmp, 
+                            stdev    = 0)
+      if (i == 1) {
+        dat <- dat.tmp
+      } else {
+        dat <- rbind(dat, dat.tmp)
+      }
     }
   }
   # IR.means <- sapply(test, function(x) {

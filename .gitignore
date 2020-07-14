@@ -1,3 +1,11 @@
+*.tex
+*.pdf
+*.csv
+*.Rmd
+*.txt
+*.gri
+*.grd
+*.tif
 .Rproj.user
 .Rhistory
 .RData

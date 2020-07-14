@@ -4,6 +4,7 @@
 .Ruserdata
 SFNRC.Rproj
 temp.txt
+^.*.png$
 ^.*\\.png$
 .httr-oauth
 *.Rproj

@@ -12,6 +12,7 @@
 #' @return a dataframe with cell IDs, the corresponding indicator region names and other data. Specifically, the following columns must be present: from the indicator region data: "INDICATOR", "NAME". Columns required in the mesh data: "CellId", "Node1", "Node2", "Node3", "Topo_avg", "landuse"
 #'
 #' @importFrom rgdal  readOGR
+#' @importFrom graphics par
 #' @importFrom sp     spTransform
 #' @importFrom sp     SpatialPointsDataFrame
 #' @importFrom sp     plot
@@ -61,7 +62,7 @@ getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], overlay = 
   IRs_only@data$model   <- modelName
   IRs_only@data$version <- versionName
   
-  par(mar= c(0,0,0,0))
+  graphics::par(mar= c(0,0,0,0))
   sp::plot(IRDat, col = "skyblue")
   sp::plot(IRs_only, pch = 19, cex = 0.4, add = TRUE)
   

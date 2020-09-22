@@ -14,7 +14,7 @@ getDifference(spdf1, spdf2, cellIDcolumn = "cellid_original")
 \item{cellIDcolumn}{cellID column, case insensitive.}
 }
 \value{
-output output is a spatial*dataframe with the geometry of spdf1. Values are differences; spdf2 - spdf1
+output output is a spatial*dataframe with the geometry of spdf1. Values are differences (spdf2 - spdf1) where positive values are higher in the alternative spdf2
 }
 \description{
 gets the difference between two spatial*dataframes

@@ -6,7 +6,7 @@
 #' @param  spdf2         alternative (positive value = alternative higher than baseline)
 #' @param  cellIDcolumn  cellID column, case insensitive. 
 #'
-#' @return output output is a spatial*dataframe with the geometry of spdf1. Values are differences; spdf2 - spdf1
+#' @return output output is a spatial*dataframe with the geometry of spdf1. Values are differences (spdf2 - spdf1) where positive values are higher in the alternative spdf2
 #'
 #' @importFrom sp merge
 #' 

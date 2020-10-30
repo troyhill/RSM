@@ -1,9 +1,3 @@
-.*\.gri$
-.*\.grd$
-.*\.grd.aux.xml$
-!\\data\\.*.gri
-!\\data\\.*.grd
-!\\data\\.*.grd.aux.xml
 .*\.tex$
 .*\.png
 .*\.pdf

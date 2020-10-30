@@ -5,8 +5,11 @@
 *.Rmd
 *.txt
 *.gri
+!\\data\\.*.gri
 *.grd
+!\\data\\.*.grd
 *.grd.aux.xml
+!\\data\\.*.grd.aux.xml
 *.tif
 .Rproj.user
 .Rhistory

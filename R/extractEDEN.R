@@ -87,8 +87,15 @@ getEDENbyROI <- function(targetLocations,
     ###
     r.vals2         <- data.frame(t(r.vals))
     r.vals2         <- r.vals2[-1, ]
-    names(r.vals2)  <- targetLocationNames
-    r.vals2$cluster <- "observed"
+    if (length(targetLocations) == 1) {
+      r.vals2 <- data.frame(
+        mean    = r.vals2,
+        cluster = rep("observed", times = length(r.vals2)))
+      names(r.vals2)[1] <- targetLocationNames
+    } else {
+      names(r.vals2)  <- targetLocationNames
+      r.vals2$cluster <- "observed"
+    }
     r.vals2$date    <- dateRange[1:nrow(r.vals2)]
     
     ### convert long to wide

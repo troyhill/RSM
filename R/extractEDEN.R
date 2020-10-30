@@ -15,7 +15,7 @@
 #' @importFrom sf st_as_sf
 #' @importFrom sf st_crs
 #' 
-#' @examples 
+#' @examples  
 #' 
 #' \dontrun{
 #' load(paste0("L:/Restoration Assessments/Non CERP Projects/COP/Position_analysis/",

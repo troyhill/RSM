@@ -7,13 +7,16 @@
 getFeatureIDs(
   shpFeature,
   mesh = rgdal::readOGR(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp",
-    package = "RSM"), "nsrsm_mesh_landuse")
+    package = "RSM"), "nsrsm_mesh_landuse"),
+  cellIDcolumn = "objectid"
 )
 }
 \arguments{
 \item{shpFeature}{a spatial*Dataframe for the indicator region, transect, point}
 
-\item{mesh}{Shapefile with model mesh cells and cell ID data (mesh must have a column named "CellId")}
+\item{mesh}{shapefile with model mesh cells and cell ID data (mesh must have a column named "CellId")}
+
+\item{cellIDcolumn}{name of column containing cell identifiers. Case insensitive.}
 }
 \value{
 a list with two elements: a vector of cell IDs, and (2) a spatial dataframe with the intersection of the mesh and the input shapefile

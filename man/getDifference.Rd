@@ -4,14 +4,14 @@
 \alias{getDifference}
 \title{getDifference}
 \usage{
-getDifference(spdf1, spdf2, cellIDcolumn = "cellid_original")
+getDifference(spdf1, spdf2, cellIDcolumn = "objectid")
 }
 \arguments{
 \item{spdf1}{baseline. SPDFs can be dataframes or spatial*dataframes}
 
 \item{spdf2}{alternative (positive value = alternative higher than baseline)}
 
-\item{cellIDcolumn}{cellID column, case insensitive.}
+\item{cellIDcolumn}{name of column containing cell identifiers. Case insensitive.}
 }
 \value{
 output output is a spatial*dataframe with the geometry of spdf1. Values are differences (spdf2 - spdf1) where positive values are higher in the alternative spdf2

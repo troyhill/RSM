@@ -1,8 +1,12 @@
-RSM version 0.0.09 (release date: TBD)
+RSM version 0.0.10 (release date: TBD)
 ==================
 Changes:
-* overhauled Gregg Reynolds' original core functions to reduce inputs and streamline behavior
-* retains deprecated versions of these functions
+
+RSM version 0.0.09 (release date: 2021-09-28)
+==================
+Changes:
+* changed projection of meshes to match EDEN data: "+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs" 
+* partial overhaul of Gregg Reynolds' original core functions to reduce inputs and streamline behavior, retains deprecated versions of these functions
 
 RSM version 0.0.08 (release date: 2020-12-17)
 ==================

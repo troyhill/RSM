@@ -1,8 +1,8 @@
 Package: RSM
 Type: Package
 Title: Utilities for synthesis of output from the Regional Simulation Model (RSM) and Miami-Dade RSM
-Version: 0.0.08
-Date: 2020-12-17
+Version: 0.0.09
+Date: 2021-09-28
 Authors@R: c(
     person("Troy", "Hill", role = c("aut", "cre"), email = "Hill.Troy@gmail.com", comment = c(ORCID = "0000-0003-2980-4099")),
     person("Gregg", "Reynolds", role = c("aut")),

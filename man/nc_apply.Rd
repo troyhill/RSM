@@ -7,7 +7,7 @@
 nc_apply(
   data,
   cellIDs = "all",
-  dates,
+  dates = "all",
   returnSpatial = FALSE,
   spdf = NULL,
   yearBegin = 5,
@@ -18,13 +18,13 @@ nc_apply(
 )
 }
 \arguments{
-\item{data}{target object. function is applied to each row.}
+\item{data}{target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`}
 
 \item{cellIDs}{which cellIDs to use? A numeric vector or "all"}
 
 \item{dates}{a POSIXlt vector of dates}
 
-\item{returnSpatial}{if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned           type of output desired. can be either "spdf" or "df"}
+\item{returnSpatial}{if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned.}
 
 \item{spdf}{the spdf to join}
 

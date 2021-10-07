@@ -3,14 +3,14 @@
 #' @description applies a function to a netCDF object
 #' 
 #'  
-#' @param  data          target object. function is applied to each row.
+#' @param  data          target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`
 #' @param  cellIDs       which cellIDs to use? A numeric vector or "all"
 #' @param  dates         a POSIXlt vector of dates
-#' @param  returnSpatial if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned           type of output desired. can be either "spdf" or "df"
+#' @param  returnSpatial if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned.
 #' @param  spdf          the spdf to join
 #' @param  yearBegin     first month of year
 #' @param  yearlength    length of "year" (units = months)
-#' @param includeMean    if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)
+#' @param  includeMean    if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)
 #' @param  func          function to apply to each year and each cell
 #' 
 #'
@@ -31,8 +31,8 @@
 
 nc_apply <- function(data, #= chead.ecb,    # function applied to each row in dataframe. units = cm w.r.t. sediment surface. 
                        ### this function takes input functions that handle multiple arguments
-                       cellIDs = "all", # which cellIDs to use? A numeric vector or "all"
-                       dates, # = dateVec, # must be posixlt?
+                       cellIDs = "all", # which cellIDs to use? A numeric vector of index values to use, or "all"
+                       dates = 'all', # = dateVec, # must be posixlt?
                        returnSpatial = FALSE, # if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned
                        spdf = NULL, # the spdf to join
                        yearBegin = 5, yearlength = 12, # first month and length of time period of interest
@@ -43,11 +43,20 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
     # time units are time units in data - days per year
     
     # TODO: fix hardcoded reference to cellId column name at end of function
-    
+  # data = altq.dat
+    if (suppressWarnings(is.rsm(data))) {
+      cellIDs <- data$cellIDs #which(data$cellMap[1,] %in% data$cellIDs) # data$cellIDs # why isn't cellsToUse working here? need an index
+      dates   <- data$dates
+      returnSpatial <- TRUE
+      spdf    <- data$spdf
+      data    <- data$stage
+    }
+  
+  
     ### reduce cells considered
     if(is.numeric(cellIDs)) {
-      data <- data[cellIDs, ] # rows are mesh cells, columns are days
-    } else {
+      data <- data[cellIDs, ] # rows are mesh cells, columns are days. `cellIDs` here needs to be an index of rows to use
+    } else { # if 'all'
       cellIDs <- 1:nrow(data) # needed for returnSpatial = TRUE
     }
     

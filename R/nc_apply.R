@@ -1,4 +1,4 @@
-#' ncApply
+#' nc_apply
 #'
 #' @description applies a function to a netCDF object
 #' 

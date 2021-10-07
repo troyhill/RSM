@@ -2,7 +2,7 @@
 % Please edit documentation in R/nc_apply.R
 \name{nc_apply}
 \alias{nc_apply}
-\title{ncApply}
+\title{nc_apply}
 \usage{
 nc_apply(
   data,

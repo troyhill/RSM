@@ -8,6 +8,7 @@ extractDSS(
   parentFolder,
   dataType = "STAGE",
   stations = "LOK,WCA1",
+  category = "SIMULATED",
   script = system.file("extdata\\\\scripts", "script_extractDSS.R", package = "RSM")
 )
 }

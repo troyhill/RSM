@@ -8,7 +8,7 @@ getFTP(
  
     ftp = "ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_ECBr_NA25_AA_BB_CC/Model_Output/",
   destination = tmpDir(),
-  pattern = "RSMBN/RSMBN_output.dss"
+  pattern = "RSMBN\\\\RSMBN_output.dss"
 )
 }
 \arguments{

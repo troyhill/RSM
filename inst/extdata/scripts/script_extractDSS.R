@@ -22,13 +22,14 @@ vargs <- commandArgs(trailingOnly = TRUE)
 ### args should be:
 ### 
 # vargs <- strsplit("--args G:\\data\\models\\LOSOM\\Iteration_3\\sensitivity STAGE LOK,WCA1", " ")[[1]]
+# vargs <- strsplit("--args G:\\data\\models\\LOSOM\\Iteration_3\\sensitivity STAGE LOK,WCA1 INPUT", " ")[[1]]
 
 print(vargs)
 
 parentFolder <- vargs[2]
 dataType     <- vargs[3] # "FLOW" or "STAGE" # would use toupper() but maybe some datatypes are case sensitive
 stations     <- strsplit(vargs[4], ",")[[1]] # remove all whitespace
-# DSSVue_addr  <- vargs[5]
+categoryType <- ifelse(length(vargs) == 5, vargs[5], 'SIMULATED')
 
 
 
@@ -46,6 +47,7 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
                        dss,      # one or more DSS files - full addresses, with alternatives in named parent folders
                        alternatives = NULL, # a vector of length(dss) with alternative names. if NULL, names extracted from dss file addresses assuming they are in labeled folders
                        type = "FLOW", # type of measurement. TODO: allow vectors of length(stations)
+                       category = "SIMULATED", # can also be 'INPUT' (for reg schedules)
                        endYear = 2016 # final year in model - to allow use on model periods ending in 2005
 ) {
   ### function pulls data from .dss files
@@ -71,7 +73,7 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
     dss_out <- dssrip::opendss(dss[j])  
     
     for(i in 1:length(station)){
-      paths.tmp <- paste0("/RSMBN/", station[i],"/", type, "/01JAN1965 - 01JAN", endYear, "/1DAY/SIMULATED/")  
+      paths.tmp <- paste0("/RSMBN/", station[i],"/", toupper(type), "/01JAN1965 - 01JAN", endYear, "/1DAY/", toupper(category), "/")  
       tmp       <- data.frame(dssrip::getFullTSC(dss_out, paths.tmp))
       tmp$date  <- as.POSIXct(rownames(tmp), format = "%Y-%m-%d")
       rownames(tmp) <- NULL
@@ -94,7 +96,7 @@ alt.names <- sapply(strsplit(alts, "/"), "[", 2)
 
 # pull data ---------------------------------------------------------------
 
-dat <- getDSSdata(station = stations, type = dataType, dss = alts) # output format? a long dataframe (results rbinded)
+dat <- getDSSdata(station = stations, type = dataType, dss = alts, category = categoryType) # output format? a long dataframe (results rbinded)
 names(dat) <- tolower(names(dat))
 
 

@@ -26,7 +26,7 @@
 
 getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_ECBr_NA25_AA_BB_CC/Model_Output/',
                           destination = tmpDir(), # alternative (positive value = alternative higher than baseline)
-                          pattern = "RSMBN/RSMBN_output.dss" # this is case insensitive. 
+                          pattern = "RSMBN\\RSMBN_output.dss" # this is case insensitive. 
 ) {
   options(timeout = max(300, getOption("timeout")))
   
@@ -40,16 +40,20 @@ getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_E
       strip.white = TRUE)$V9
   subfolders <- grep(x = dir_list, pattern = "\\.|\\..", value = TRUE, invert = TRUE)
   url_list   <- paste0(url, subfolders, "/", pattern)
-  alts       <- sapply(strsplit(url_list, '/'), FUN = "[[", 9) # probably identical to `subfolders` but this will exclude empty folders
-  subDir     <- sapply(strsplit(url_list, '/'), FUN = "[[", 10) # probably identical to `subfolders` but this will exclude empty folders
+  alts       <- sapply(strsplit(url_list, '/'), FUN = "[[", 9) #  identical to `subfolders` 
+  subDir     <- sapply(strsplit(url_list, '/'), FUN = "[[", 10)
   
   ### this will fail if there are multiple files in the regex query
   files      <- sapply(strsplit(pattern, '/|\\\\'), FUN = tail, 1)
   
   for(i in 1:length(url_list)){
-    directory <- paste0(destination,"/Model_Output/", alts[i], "/") #, subDir[i], "/")
+    directory <- paste0(destination,"\\Model_Output\\", alts[i], "\\") #, subDir[i], "/")
     dir.create(directory, recursive = TRUE, showWarnings = FALSE)
-    dest <- paste0(directory, files) # "\\RSMBN_output.dss")
-    download.file(url_list[i], dest, mode = "wb", cacheOK = F)
+    dest      <- paste0(directory, files) # "\\RSMBN_output.dss")
+    
+    tryCatch(
+      download.file(url_list[i], dest, mode = "wb", cacheOK = F),
+      error=function(e) print(paste(alts[i], ' data did not download'))
+    )
   }
 }

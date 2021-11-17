@@ -24,12 +24,13 @@
 extractDSS <- function(parentFolder, # directory with folders labeled by alternative name, containing 'RSMBN_output.dss' files. subfolder names will be used to label alternative data. Additionally, the output .RData file will appear in the parentFolder labeled with the dataType and date.
                           dataType = 'STAGE', # type of data sought. Can be 'STAGE' or 'FLOW'
                           stations = "LOK,WCA1", # a comma separated, single-element vector of station names. User must ensure these appear in dss files and have the specified dataType
+                          category = "SIMULATED", # or 'INPUT' for e.g., regulation schedules
                           script   = system.file("extdata\\scripts", "script_extractDSS.R", package = "RSM")
 ) {
   stations <- gsub("\\s", "", stations) # remove all whitespace
   # dataType <- toupper(dataType) # make sure no dataTypes are case sensitive
   ### assemble arguments
-  all_args <- paste(' --args', parentFolder, dataType, stations)
+  all_args <- paste(' --args', parentFolder, dataType, stations, category)
   system(paste0(Sys.getenv("R_HOME"), "\\bin\\i386\\Rscript.exe ", 
                 shQuote(script),# "C:\\RDATA\\EVER_misc\\script_pullDSS_20211006.R"), 
                 all_args))

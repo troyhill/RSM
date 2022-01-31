@@ -37,7 +37,7 @@ extractDSS <- function(parentFolder, # directory with folders labeled by alterna
   stations <- gsub("\\s", "", stations) # remove all whitespace
   # dataType <- toupper(dataType) # make sure no dataTypes are case sensitive
   ### assemble arguments
-  all_args <- paste(' --args', parentFolder, RSM_type, dataType, stations, category)
+  all_args <- paste(' --args', parentFolder, RSM_type, dataType, stations, endYear, category)
   system(paste0(Sys.getenv("R_HOME"), "\\bin\\i386\\Rscript.exe ", 
                 shQuote(script),# "C:\\RDATA\\EVER_misc\\script_pullDSS_20211006.R"), 
                 all_args))

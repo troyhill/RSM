@@ -18,7 +18,9 @@
 # get command line arguments ----------------------------------------------
 
 vargs <- commandArgs(trailingOnly = TRUE)
-
+# vargs <- strsplit(all_args, " ")[[1]]
+# vargs <- strsplit(" --args G:\\data\\models\\COP RSMGL STAGE ENP_NP-205,ENP_SPARO 2005 SIMULATED", " ")[[1]]
+# vargs <- vargs[2:length(vargs)]
 ### args should be:
 ### 
 # vargs <- strsplit("--args G:\\data\\models\\LOSOM\\Iteration_3\\sensitivity STAGE LOK,WCA1", " ")[[1]]
@@ -144,7 +146,7 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
 
 
 # get alternative names ----------------------------------------------
-alts      <- list.files(parentFolder, pattern = paste0(RSM_type, '_output\\.dss'), recursive = TRUE, full.names = TRUE)
+alts      <- list.files(parentFolder, pattern = paste0(RSM_type, '.*_output\\.dss'), recursive = TRUE, full.names = TRUE)
 n.alts    <- length(alts)
 alt.names <- sapply(strsplit(alts, "/"), "[", 2)
 

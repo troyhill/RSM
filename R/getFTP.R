@@ -36,7 +36,7 @@ getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_E
       textConnection(
         getURLContent(url)
       ),
-      sep = "",
+      sep = "", fill = TRUE, # fill = true: https://stackoverflow.com/a/19455534/3723870
       strip.white = TRUE)$V9
   subfolders <- grep(x = dir_list, pattern = "\\.|\\..", value = TRUE, invert = TRUE)
   url_list   <- paste0(url, subfolders, "/", pattern)
@@ -53,7 +53,16 @@ getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_E
     
     tryCatch(
       download.file(url_list[i], dest, mode = "wb", cacheOK = F),
-      error=function(e) print(paste(alts[i], ' data did not download'))
+      error=function(e) {
+        print(paste(alts[i], ' data did not download'))
+        return(NULL)},
+      warning=function(cond) {
+        message(paste(alts[i], "caused a warning"))
+        message("Here's the original warning message:")
+        message(cond)
+        # Choose a return value in case of warning
+        return(NULL)
+      }
     )
   }
 }

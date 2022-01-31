@@ -27,9 +27,11 @@ vargs <- commandArgs(trailingOnly = TRUE)
 print(vargs)
 
 parentFolder <- vargs[2]
-dataType     <- vargs[3] # "FLOW" or "STAGE" # would use toupper() but maybe some datatypes are case sensitive
-stations     <- strsplit(vargs[4], ",")[[1]] # remove all whitespace
-categoryType <- ifelse(length(vargs) == 5, vargs[5], 'SIMULATED')
+RSM_type     <- vargs[3] # 'RSMGL' or 'RSMBN'
+dataType     <- vargs[4] # "FLOW" or "STAGE" # would use toupper() but maybe some datatypes are case sensitive
+stations     <- strsplit(vargs[5], ",")[[1]] # remove all whitespace
+endYear      <- vargs[6] # 2005 or 2016
+categoryType <- ifelse(length(vargs) == 7, vargs[7], 'SIMULATED')
 
 
 
@@ -46,6 +48,7 @@ library(dssrip)
 getDSSdata <- function(station,  # one or more stations - as named in DSS files
                        dss,      # one or more DSS files - full addresses, with alternatives in named parent folders
                        alternatives = NULL, # a vector of length(dss) with alternative names. if NULL, names extracted from dss file addresses assuming they are in labeled folders
+                       RSM_file = 'RSMBN',
                        type = "FLOW", # type of measurement. TODO: allow vectors of length(stations)
                        category = "SIMULATED", # can also be 'INPUT' (for reg schedules)
                        endYear = 2016 # final year in model - to allow use on model periods ending in 2005
@@ -70,16 +73,67 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
   
   q.dat <- data.frame()
   for(j in 1:length(dss)){
-    dss_out <- dssrip::opendss(dss[j])  
+    tryCatch( # attempt to handle failure to open the dss file
+      {
+    dss_out <- dssrip::opendss(dss[j])},
+    error=function(cond) {
+      message("error message:")
+      message(cond)
+      # # Choose a return value in case of error
+      dss_out$close()
+    },
+    warning=function(cond) {
+      message("original warning message:")
+      message(cond)
+      # # Choose a return value in case of warning
+      dss_out$close()
+    }, 
+    finally={
+      # NOTE:
+      # Here goes everything that should be executed at the end,
+      # regardless of success or error.
+      # If you want more than one expression to be executed, then you 
+      # need to wrap them in curly brackets ({...}); otherwise you could
+      # just have written 'finally=<expression>' 
+      # next
+    }
+    )
+    
     
     for(i in 1:length(station)){
-      paths.tmp <- paste0("/RSMBN/", station[i],"/", toupper(type), "/01JAN1965 - 01JAN", endYear, "/1DAY/", toupper(category), "/")  
+      paths.tmp <- paste0("/", RSM_file, "/", station[i],"/", toupper(type), "/01JAN1965 - 01JAN", endYear, "/1DAY/", toupper(category), "/")  
+      tryCatch(
+        {
       tmp       <- data.frame(dssrip::getFullTSC(dss_out, paths.tmp))
       tmp$date  <- as.POSIXct(rownames(tmp), format = "%Y-%m-%d")
       rownames(tmp) <- NULL
       tmp$stn   <- station[i]
       tmp$alt   <- alt.names[j]
-      q.dat     <- rbind(tmp,q.dat)
+        },
+      error=function(cond) {
+        message("error message:") # 'non-numeric argument to binary operator' = no data for station
+        message(cond)
+        # next
+      },
+      warning=function(cond) {
+        message("original warning message:")
+        message(cond)
+        # next
+      }, 
+      finally={
+        # NOTE:
+        # Here goes everything that should be executed at the end,
+        # regardless of success or error.
+        # If you want more than one expression to be executed, then you 
+        # need to wrap them in curly brackets ({...}); otherwise you could
+        # just have written 'finally=<expression>' 
+        # next
+      }
+      )
+      if (exists("tmp")) {
+        q.dat     <- rbind(tmp,q.dat)
+      } 
+      rm(tmp) # clean up
       cat(alt.names[j], "progress:", round(i/length(station) * 100), "%\n")
     }
   }
@@ -88,19 +142,19 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
 
 
 
+
 # get alternative names ----------------------------------------------
-alts      <- list.files(parentFolder, pattern = 'RSMBN_output\\.dss', recursive = TRUE, full.names = TRUE)
+alts      <- list.files(parentFolder, pattern = paste0(RSM_type, '_output\\.dss'), recursive = TRUE, full.names = TRUE)
 n.alts    <- length(alts)
 alt.names <- sapply(strsplit(alts, "/"), "[", 2)
 
 
 # pull data ---------------------------------------------------------------
-
-dat <- getDSSdata(station = stations, type = dataType, dss = alts, category = categoryType) # output format? a long dataframe (results rbinded)
-names(dat) <- tolower(names(dat))
-
-
+  dat <- getDSSdata(station = stations, RSM_file = RSM_type, type = dataType, dss = alts, 
+                    endYear = endYear, category = categoryType) # output format? a long dataframe (results rbinded)
+  names(dat) <- tolower(names(dat))
+  
 # save data: note type, date ----------------------------------------------
-
+  
 save(dat, file = paste0(parentFolder, "\\", format(Sys.Date(), format = "%Y%m%d"), "_", dataType, ".RData")) #"C:/RDATA/LOSOM/iter3/iter3_dss.RData")
 ### user can rename the .RData file.

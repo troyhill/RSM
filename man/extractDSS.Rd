@@ -6,18 +6,26 @@
 \usage{
 extractDSS(
   parentFolder,
+  RSM_type = "RSMBN",
   dataType = "STAGE",
   stations = "LOK,WCA1",
   category = "SIMULATED",
+  endYear = 2016,
   script = system.file("extdata\\\\scripts", "script_extractDSS.R", package = "RSM")
 )
 }
 \arguments{
 \item{parentFolder}{directory (no spaces are permitted) with folders labeled by alternative name, containing 'RSMBN_output.dss' files. subfolder names will be used to label alternative data. Additionally, the output .RData file will appear in the parentFolder labeled with the dataType and date.}
 
+\item{RSM_type}{type of RSM file. Can be 'RSMGL' or 'RSMBN'}
+
 \item{dataType}{type of data sought. Can be 'STAGE' or 'FLOW'}
 
 \item{stations}{a comma separated, single-element vector of station names. User must ensure these appear in dss files and have the specified dataType. Invalid data may result in an error similar to `Error in tsc$times * 60 : non-numeric argument to binary operator`}
+
+\item{category}{type of input sought; 'SIMULATED' (gage data) or 'INPUT' (regulation schedules). These cannot be intermixed in a single call.}
+
+\item{endYear}{final year in .dss data series. Typically 2005 (COP) or 2016 (default; LOSOM etc.). The period of record used may change in the future}
 
 \item{script}{script run in 32-bit R to extract data from DSS files.}
 }
@@ -31,6 +39,8 @@ Extract data from .dss files and export them as an .RData file. This script is u
 extractDSS(parentFolder = 'G:\\\\data\\\\models\\\\LOSOM\\\\Iteration_3\\\\sensitivity',
            dataType     = 'STAGE',
            stations     = 'LOK,WCA1',
+           category     = 'SIMULATED',
+           endYear      = 2016,
            script       = system.file("extdata\\\\scripts","script_extractDSS.R",package="RSM"))
 
 }

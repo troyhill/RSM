@@ -50,7 +50,7 @@ library(dssrip)
 getDSSdata <- function(station,  # one or more stations - as named in DSS files
                        dss,      # one or more DSS files - full addresses, with alternatives in named parent folders
                        alternatives = NULL, # a vector of length(dss) with alternative names. if NULL, names extracted from dss file addresses assuming they are in labeled folders
-                       RSM_file = 'RSMBN',
+                       RSM_file = 'RSMBN', # everything in the filename before '_output.dss'; could be 'RSMGL' (LOSOM) or 'RSMGL_SD' (COP)
                        type = "FLOW", # type of measurement. TODO: allow vectors of length(stations)
                        category = "SIMULATED", # can also be 'INPUT' (for reg schedules)
                        endYear = 2016 # final year in model - to allow use on model periods ending in 2005
@@ -150,9 +150,10 @@ alts      <- list.files(parentFolder, pattern = paste0(RSM_type, '.*_output\\.ds
 n.alts    <- length(alts)
 alt.names <- sapply(strsplit(alts, "/"), "[", 2)
 
+RSM_type_mod <- strsplit(alts, split = "/|\\_output.dss")[[1]][3] # COP .dss files have data labeled with 'RSMGL_SD'
 
 # pull data ---------------------------------------------------------------
-  dat <- getDSSdata(station = stations, RSM_file = RSM_type, type = dataType, dss = alts, 
+  dat <- getDSSdata(station = stations, RSM_file = RSM_type_mod, type = dataType, dss = alts, 
                     endYear = endYear, category = categoryType) # output format? a long dataframe (results rbinded)
   names(dat) <- tolower(names(dat))
   

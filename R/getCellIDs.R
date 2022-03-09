@@ -36,35 +36,43 @@ getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], overlay = 
   
   if(is.character(modelMesh)) {
     meshDat <- rgdal::readOGR(modelMesh) # paste(getwd(), "inst/extdata/gis/nsrsm_v352/nsrsm_mesh_landuse.shp", sep = "/"))
-  } else if (class(modelMesh) %in% "SpatialPolygonsDataFrame") {
+    # meshDat <-  sf::read_sf(modelMesh) #system.time(test <- read_sf(dsn = dsn, layer = lay))
+  } else if (grepl(x = class(modelMesh), pattern = "sf|SpatialPolygonsDataFrame")) {
     meshDat <- modelMesh
   } else {
-    stop("modelMesh input is not supported. Object must be a spatialPolygonDataframe of the model mesh cells or a character vector of the address of the shapefile to be imported")
+    stop("modelMesh input is not supported. Object must be an sf or spatialPolygonDataframe object representing the model mesh cells or a character vector of the address of the shapefile to be imported")
   }
   IRDat   <- sp::spTransform(indicatorRegions, raster::crs(meshDat))
-  
+  # IRDat   <- sp::st_transform(x = indicatorRegions, crs = sf::st_crs(meshDat))
   # plot(meshDat)
   # plot(IRDat, add = TRUE, col = "red")
   # modelOutput         <- nc_open(paste(baseDir, modelVec, modelVersion, modelAlt, 'globalmonitors.nc', sep='/'))
   
   if (overlay %in% "centroid") {
     meshDat_pts <- rgeos::gCentroid(meshDat, byid=TRUE) # removes data. need to add back in via merge. Too elaborate.
+    # meshDat_pts <- sf::st_centroid(x = meshDat, of_largest_polygon = FALSE)
     meshDat_pts <- sp::SpatialPointsDataFrame(rgeos::gCentroid(meshDat, byid=TRUE), 
                                               meshDat@data, match.ID=FALSE)
+    # meshDat_pts <- sf::st_sf(sf::st_centroid(x = meshDat, of_largest_polygon = FALSE), 
+    #                                           meshDat@data, match.ID=FALSE)
+    
     ### TODO (low priority): identify/return polygons whose centroids fall inside the indicator regions (rather than returning the centroids themselves)
     IRs_only    <- raster::intersect(y = IRDat, x = meshDat_pts) 
+    # IRs_only    <- terra::intersect(y = IRDat, x = meshDat_pts) 
   } else if (overlay %in% "any") {
-    IRs_only <- raster::intersect(y = IRDat, x = meshDat) 
+    IRs_only <- raster::intersect(y = IRDat, x = meshDat)
+    # IRs_only <- terra::intersect(y = IRDat, x = meshDat) 
   } else {
     stop("overlay argument must be 'any' or 'centroid'. see ?getCellIDs for more detail.")
   }
   
+  ### this nomenclature might differ. create new columns
   IRs_only@data$model   <- modelName
   IRs_only@data$version <- versionName
   
   graphics::par(mar= c(0,0,0,0))
-  sp::plot(IRDat, col = "skyblue")
-  sp::plot(IRs_only, pch = 19, cex = 0.4, add = TRUE)
+  # sf::plot(IRDat, col = "skyblue")
+  # sf::plot(IRs_only, pch = 19, cex = 0.4, add = TRUE)
   
   invisible(IRs_only@data[, c("model", "version", "INDICATOR", "CellId", "NAME", "Node1", "Node2", "Node3", "Topo_avg", "landuse")])
 }

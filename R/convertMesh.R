@@ -30,9 +30,12 @@ convertMesh <- function(meshToMatch, # polygons to be returned. Must have "cellI
   
   ### find polygon (in meshToMatch) closest to each MeshToConvert centroid. 
   cellCentroid <- rgeos::gCentroid(meshToMatch, byid=TRUE) # every centroid needs cellID from meshToConvert
-  # summary(apply(gDistance(cellCentroid, meshToConvert, byid=TRUE),2,min)) # some cells are excluded - distances > 0
   test    <- sp::over(cellCentroid, meshToConvert) # each row is a feature in meshToMatch
-  outMesh <- meshToMatch
+  ### possible replacements, need to be tested:
+  # cellCentroid <- sf::st_centroid(x = meshToMatch, of_largest_polygon = FALSE) # every centroid needs cellID from meshToConvert
+  # test         <- sapply(sf::st_intersects(x = cellCentroid, y = meshToConvert), function(z) if (length(z)==0) NA_integer_ else z[1])
+  
+  outMesh      <- meshToMatch
   outMesh@data <- test # length(unique(test$CellId)) << nrow(test) # some cells from meshToMatch are used in multiple meshToConvert cells
   
   if (returnOriginalCellIDs) {

@@ -8,7 +8,6 @@
 #'
 #' @return output output is a spatial*dataframe with the geometry of spdf1. Values are differences (spdf2 - spdf1) where positive values are higher in the alternative spdf2
 #'
-#' @importFrom sp merge
 #' 
 #' @export
 #' 

@@ -18,5 +18,10 @@
 #' #proj4string(pts) <- proj4string(IRMap[[2]]) # "simulation netcdf data") 
 #' #save(pts, file = paste0(getwd(), "/data/data_pts_20200316.RData"))
 #' 
+#' ### sf version: 
+#' # pts        <- read.delim("L:/Restoration Assessments/Non CERP Projects/COP/Position_analysis/
+#' #  data/data_drought_gage_table_20200109.txt")
+#' # pts <- st_as_sf(pts,coords=c("UTM_north","UTM_east"), crs=32619)
+#' 
 #' @format A SpatialPointsDataFrame
 NULL

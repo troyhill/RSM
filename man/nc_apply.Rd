@@ -24,9 +24,9 @@ nc_apply(
 
 \item{dates}{a POSIXlt vector of dates}
 
-\item{returnSpatial}{if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned.}
+\item{returnSpatial}{if TRUE, a joined sf is returned. If FALSE, a dataframe is returned.}
 
-\item{spdf}{the spdf to join}
+\item{spdf}{the sf object to join}
 
 \item{yearBegin}{first month of year}
 

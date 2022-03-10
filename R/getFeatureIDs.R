@@ -59,7 +59,7 @@ getFeatureIDs <- function(shpFeature, # = fireHydro::BICY_EVER_PlanningUnits, # 
   getName <- grep(x = toupper(names(int)),   pattern = toupper(cellIDcolumn)) 
   returnIDs <- as.data.frame(int[, getName])
   
-  if (returnType = 'sf') { 
+  if (returnType == 'sf') { 
     int <- sf::st_as_sf(int)
   }
   invisible(list(cellIDs = as.numeric(returnIDs[, 1]), mesh = int[, getName]))

@@ -8,6 +8,7 @@ convertMesh(
   meshToMatch,
   meshToConvert,
   returnOriginalCellIDs = FALSE,
+  joinBy = "cellID",
   output = "spdf"
 )
 }
@@ -18,10 +19,12 @@ convertMesh(
 
 \item{returnOriginalCellIDs}{should MeshToMatch cellIDs be returned?}
 
-\item{output}{type of output desired. can be either "spdf" or "df"}
+\item{joinBy}{name of column used to link meshes}
+
+\item{output}{type of output desired. can be either "sf" or "df"}
 }
 \value{
-a spatialpolygondataframe or dataframe with the cellIDs in meshToMatch that
+an sf or dataframe with the cellIDs in meshToMatch that
 }
 \description{
 Converts cell meshes using cellID centroids from meshToConvert and returns cellIDs from meshToMatch.

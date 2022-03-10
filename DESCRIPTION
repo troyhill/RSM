@@ -28,7 +28,7 @@ Depends:
     raster,
     sp
 Remotes: troyhill/fireHydro
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
     covr,
     testthat,

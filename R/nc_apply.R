@@ -6,8 +6,8 @@
 #' @param  data          target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`
 #' @param  cellIDs       which cellIDs to use? A numeric vector or "all"
 #' @param  dates         a POSIXlt vector of dates
-#' @param  returnSpatial if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned.
-#' @param  spdf          the spdf to join
+#' @param  returnSpatial if TRUE, a joined sf is returned. If FALSE, a dataframe is returned.
+#' @param  spdf          the sf object to join
 #' @param  yearBegin     first month of year
 #' @param  yearlength    length of "year" (units = months)
 #' @param  includeMean    if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)
@@ -21,8 +21,7 @@
 #' @importFrom parallel stopCluster
 #' @importFrom parallel detectCores
 #' @importFrom parallel parApply
-#' @importFrom sp merge
-#' @importFrom sp spplot
+#' @importFrom sf merge
 #' 
 #' @export
 #' 
@@ -107,12 +106,12 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
       yrDat <- cbind(cellIDs, returnDat)
       names(yrDat)[1] <- cellNames # label "CellId" column
       ### merge data with spdf
-      returnDat <- sp::merge(spdf, yrDat, by = cellNames, duplicateGeoms = TRUE)
-      print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
+      returnDat <- sf::merge(spdf, yrDat, by = cellNames, duplicateGeoms = TRUE)
+      # print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
     }
     
     if (includeMean) {
-      returnDat@data$mean <- rowMeans(data.frame(returnDat@data[, 2:ncol(returnDat@data)]), na.rm = TRUE)
+      returnDat$mean <- rowMeans(data.frame(returnDat[, 2:ncol(returnDat)]), na.rm = TRUE)
     }
     
     invisible(returnDat)

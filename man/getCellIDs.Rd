@@ -7,17 +7,17 @@
 getCellIDs(
   modelMesh,
   indicatorRegions = RSM::IRMap[[2]],
-  overlay = "any",
-  modelName,
-  versionName
+  returnType = "polygons",
+  modelName = NA,
+  versionName = NA
 )
 }
 \arguments{
-\item{modelMesh}{a spatialPolygonDataframe with model mesh cells and cell ID data (or, a character vector of the file address to be imported internally via rgdal::readOGR)}
+\item{modelMesh}{a SpatVector with model mesh cells and cell ID data (or, a character vector of the file address to be imported internally via rgdal::readOGR)}
 
-\item{indicatorRegions}{a spatialPolygonDataframe with indicator region data}
+\item{indicatorRegions}{a SpatVector with indicator region data}
 
-\item{overlay}{specifies the method used to identify cells. "any" identifies cells that have any fraction falling within an indicator region (default protocol; cells are clipped to IR extents), "centroid" identifies included cells based on whether their centroid falls within an IR (cells are not currently clipped to IR extents)}
+\item{returnType}{specifies whether centroid points or partial mesh polygons are returned.}
 
 \item{modelName}{name of the model mesh used (e.g., rsm, COP)}
 

@@ -3,6 +3,7 @@ Type: Package
 Title: Post-processing tools for Regional Simulation Model output
 Version: 0.0.11
 Date: 2022-03-09
+Encoding: UTF-8
 Authors@R: c(
     person("Troy", "Hill", role = c("aut", "cre"), email = "Hill.Troy@gmail.com", comment = c(ORCID = "0000-0003-2980-4099")),
     person("Gregg", "Reynolds", role = c("aut")),

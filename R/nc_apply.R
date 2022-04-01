@@ -7,7 +7,7 @@
 #' @param  cellIDs       which cellIDs to use? A numeric vector or "all"
 #' @param  dates         a POSIXlt vector of dates
 #' @param  returnSpatial if TRUE, a joined sf is returned. If FALSE, a dataframe is returned.
-#' @param  spdf          the sf object to join
+#' @param  spdf          the spatial object to join output to
 #' @param  yearBegin     first month of year
 #' @param  yearlength    length of "year" (units = months)
 #' @param  includeMean    if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)
@@ -16,17 +16,26 @@
 #'
 #' @return output is a vector with the value returned by "func" applied to each year
 #'
+#'#' @examples
+#' 
+#' \dontrun{
+#' ### default behavior is to return data from the most recent date
+#' 
+#' 
+#' }
+#' 
+#' 
 #' @importFrom zoo    as.yearmon
 #' @importFrom parallel makeCluster
 #' @importFrom parallel stopCluster
 #' @importFrom parallel detectCores
 #' @importFrom parallel parApply
-#' @importFrom sf merge
+#' @importFrom terra merge
 #' 
 #' @export
 #' 
 
-
+### TODO: have option to summarize by year, year-mo, etc. 
 
 nc_apply <- function(data, #= chead.ecb,    # function applied to each row in dataframe. units = cm w.r.t. sediment surface. 
                        ### this function takes input functions that handle multiple arguments
@@ -85,6 +94,10 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
                                    X = data[, which(dates2$year == unique(dates2$year)[i])], # export "threshold", "output"
                                    #1:nrow(data[1:2, dates2$year == i]),
                                    FUN = func, ...) # , na.rm = TRUE) #
+      # yrVals <- parallel::parApply(cl = cl, MARGIN = 1,
+      #                              X = data[, which(dates2$year == unique(dates2$year)[i])], # export "threshold", "output"
+      #                              #1:nrow(data[1:2, dates2$year == i]),
+      #                              FUN = hydroperiod, continuous = FALSE)
       # yrVals <- parallel::clusterMap(cl = cl, #MARGIN = 1, 
       #                                X = data[, dates2$year == unique(dates2$year)[i]], # export "threshold", "output"
       #                                #1:nrow(data[1:2, dates2$year == i]), 
@@ -97,21 +110,33 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
         returnDat <- yrVals
       }
     }
-    stopCluster(cl)
+    parallel::stopCluster(cl)
     returnDat        <- as.data.frame(returnDat)
     names(returnDat) <- paste0("yr", (1899 + unique(dates2$year)[1]) + 1:length(unique(dates2$year))) # I go back and forth about whether it's best to use dates (calendar year) or dates2 (WY/transformed year). 
     
     if ((returnSpatial == TRUE) && !is.null(spdf)) {
-      cellNames <- names(spdf)[1]# "CellId" column
-      yrDat <- cbind(cellIDs, returnDat)
-      names(yrDat)[1] <- cellNames # label "CellId" column
+      ### 
+      # cellNames <- names(spdf)[1]# "CellId" column
+      # yrDat <- cbind(cellIDs, returnDat)
+      # names(yrDat)[1] <- cellNames # label "CellId" column
       ### merge data with spdf
-      returnDat <- sf::merge(spdf, yrDat, by = cellNames, duplicateGeoms = TRUE)
+      # returnDat2 <- terra::merge(spdf, returnDat)#, by = cellNames)
+      returnDat <- cbind(spdf, returnDat)#, by = cellNames)
+      # plot(returnDat2, 'returnDat')
       # print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
     }
     
+    # if ((returnSpatial == TRUE) && !is.null(spdf)) {
+    #   cellNames <- names(spdf)[1]# "CellId" column
+    #   yrDat <- cbind(cellIDs, returnDat)
+    #   names(yrDat)[1] <- cellNames # label "CellId" column
+    #   ### merge data with spdf
+    #   returnDat <- terra::merge(spdf, yrDat, by = cellNames)
+    #   # print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
+    # }
+    
     if (includeMean) {
-      returnDat$mean <- rowMeans(data.frame(returnDat[, 2:ncol(returnDat)]), na.rm = TRUE)
+      returnDat$mean <- rowMeans(data.frame(returnDat[, grep(x = names(returnDat), pattern = 'yr')]), na.rm = TRUE)
     }
     
     invisible(returnDat)

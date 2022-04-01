@@ -4,18 +4,25 @@
 \alias{getDifference}
 \title{getDifference}
 \usage{
-getDifference(spdf1, spdf2, cellIDcolumn = "objectid")
+getDifference(spdf1, spdf2, valueName = NULL)
 }
 \arguments{
 \item{spdf1}{baseline. SPDFs can be dataframes or spatial*dataframes}
 
 \item{spdf2}{alternative (positive value = alternative higher than baseline)}
 
-\item{cellIDcolumn}{name of column containing cell identifiers. Case insensitive.}
+\item{valueName}{name of column containing the quantity to compare. Should be the same in both SpatVector objects. If this argument is NULL, the first column is used}
 }
 \value{
-output output is a spatial*dataframe with the geometry of spdf1. Values are differences (spdf2 - spdf1) where positive values are higher in the alternative spdf2
+output output is a SpatVector with the geometry of spdf1. Values are differences (spdf2 - spdf1) where positive values are higher in the alternative spdf2
 }
 \description{
-gets the difference between two spatial*dataframes
+gets the difference between two SpatVector objects.
+}
+\examples{
+
+\dontrun{
+}
+
+
 }

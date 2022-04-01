@@ -29,10 +29,10 @@ convertMesh <- function(meshToMatch, # polygons to be returned. Must have "cellI
   # meshToMatch <- sf::st_crop(sf::read_sf(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package="RSM"),"nsrsm_mesh_landuse"), 
   #                       y = sf::st_transform(x = fireHydro::BICY_EVER_PlanningUnits, crs = sf::st_crs(meshToConvert)))
   
-  if (any(grepl(x = class(meshToMatch), pattern = 'sf|SpatialPolygonsDataFrame'))) {
+  if (!any(grepl(x = class(meshToMatch), pattern = 'SpatVector'))) {
     meshToMatch <- terra::vect(meshToMatch)
   }
-  if (any(grepl(x = class(meshToConvert), pattern = 'sf|SpatialPolygonsDataFrame'))) {
+  if (!any(grepl(x = class(meshToConvert), pattern = 'SpatVector'))) {
     meshToConvert <- terra::vect(meshToConvert)
   }
   ### map cellIDs based on centroid.

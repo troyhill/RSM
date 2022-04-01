@@ -2,7 +2,7 @@
 #'
 #' @description gets the difference between two SpatVector objects.
 #' 
-#' @param  spdf1         baseline. SPDFs can be dataframes or spatial*dataframes
+#' @param  spdf1         baseline data (SpatVector object)
 #' @param  spdf2         alternative (positive value = alternative higher than baseline)
 #' @param  valueName     name of column containing the quantity to compare. Should be the same in both SpatVector objects. If this argument is NULL, the first column is used
 #'
@@ -25,5 +25,5 @@ getDifference <- function(spdf1, # baseline. SPDFs can be dataframes or spatial*
                           valueName = NULL # case insensitive, if provided
 ) {
   
-  
+  message('this function is deprecated')
 }

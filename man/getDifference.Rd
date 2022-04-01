@@ -7,7 +7,7 @@
 getDifference(spdf1, spdf2, valueName = NULL)
 }
 \arguments{
-\item{spdf1}{baseline. SPDFs can be dataframes or spatial*dataframes}
+\item{spdf1}{baseline data (SpatVector object)}
 
 \item{spdf2}{alternative (positive value = alternative higher than baseline)}
 

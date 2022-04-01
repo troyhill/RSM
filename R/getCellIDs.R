@@ -11,14 +11,13 @@
 #'
 #' @return a dataframe with cell IDs, the corresponding indicator region names and other data. Specifically, the following columns must be present: from the indicator region data: "INDICATOR", "NAME". Columns required in the mesh data: "CellId", "Node1", "Node2", "Node3", "Topo_avg", "landuse"
 #'
-#' @importFrom terra  vect
-#' @importFrom graphics par
+#' @importFrom terra     vect
+#' @importFrom graphics  par
 #' @importFrom terra     project
-#' @importFrom sp     SpatialPointsDataFrame
-#' @importFrom sp     plot
-#' @importFrom rgeos  gCentroid
-#' @importFrom raster intersect
-#' @importFrom terra crs
+#' @importFrom terra     crs
+#' @importFrom terra     plot
+#' @importFrom terra     centroids
+#' @importFrom terra     intersect
 #' 
 #' @export
 #' 
@@ -35,10 +34,10 @@ getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], returnType
   ### (2) based on cell centroids (cells are *not* currently clipped to IR extents)
   # modelMesh <-  sf::read_sf(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package="RSM"),"nsrsm_mesh_landuse")
   
-  if (any(grepl(x = class(modelMesh), pattern = 'sf|SpatialPolygonsDataFrame'))) {
+  if (!any(grepl(x = class(modelMesh), pattern = 'SpatVector'))) {
     modelMesh <- terra::vect(modelMesh)
   }
-  if (any(grepl(x = class(indicatorRegions), pattern = 'sf|SpatialPolygonsDataFrame'))) {
+  if (!any(grepl(x = class(indicatorRegions), pattern = 'SpatVector'))) {
     indicatorRegions <- terra::vect(indicatorRegions)
   }
   if(is.character(modelMesh)) {
@@ -50,7 +49,7 @@ getCellIDs <- function(modelMesh, indicatorRegions = RSM::IRMap[[2]], returnType
   } else {
     stop("modelMesh input is not supported. Object must be an sf or spatialPolygonDataframe object representing the model mesh cells or a character vector of the address of the shapefile to be imported")
   }
-  IRDat   <- terra::project(indicatorRegions, terra::crs(meshDat))
+  IRDat   <- terra::project(x = indicatorRegions, y = terra::crs(meshDat, proj = TRUE))
   # IRDat   <- sp::st_transform(x = indicatorRegions, crs = sf::st_crs(meshDat))
   # plot(meshDat)
   # plot(IRDat, add = TRUE, col = "red")

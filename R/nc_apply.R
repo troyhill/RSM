@@ -40,12 +40,12 @@
 nc_apply <- function(data, #= chead.ecb,    # function applied to each row in dataframe. units = cm w.r.t. sediment surface. 
                        ### this function takes input functions that handle multiple arguments
                        cellIDs = "all", # which cellIDs to use? A numeric vector of index values to use, or "all"
-                       dates = 'all', # = dateVec, # must be posixlt?
+                       dates   = 'all', # = dateVec, # must be posixlt?
                        returnSpatial = FALSE, # if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned
-                       spdf = NULL, # the spdf to join
-                       yearBegin = 5, yearlength = 12, # first month and length of time period of interest
-                       includeMean = TRUE, # includes a column averaging annual values if TRUE
-                       func = mean, ...) {
+                       spdf    = NULL, # the spdf to join
+                       yearBegin     = 5, yearlength = 12, # first month and length of time period of interest
+                       includeMean   = TRUE, # includes a column averaging annual values if TRUE
+                       func    = mean, ...) {
     # output is a vector with the longest continuous inundation period for each year
     # threshold should be in the same units as depth data
     # time units are time units in data - days per year

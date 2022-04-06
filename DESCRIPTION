@@ -23,17 +23,12 @@ Depends:
     terra,
     sf,
     parallel,
-    zoo,
-    rgdal,
-    rgeos,
-    raster,
-    sp
+    zoo
 Remotes: troyhill/fireHydro
 RoxygenNote: 7.1.2
 Suggests: 
     covr,
     testthat,
     knitr,
-    rmarkdown,
-    fireHydro
+    rmarkdown
 VignetteBuilder: knitr

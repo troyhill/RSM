@@ -5,6 +5,7 @@
 #'  
 #' @param  data          target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`
 #' @param  cellIDs       which cellIDs to use? A numeric vector or "all"
+#' @param  cellMap       if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.
 #' @param  dates         a POSIXlt vector of dates
 #' @param  returnSpatial if TRUE, a joined sf is returned. If FALSE, a dataframe is returned.
 #' @param  spdf          the spatial object to join output to
@@ -40,6 +41,7 @@
 nc_apply <- function(data, #= chead.ecb,    # function applied to each row in dataframe. units = cm w.r.t. sediment surface. 
                        ### this function takes input functions that handle multiple arguments
                        cellIDs = "all", # which cellIDs to use? A numeric vector of index values to use, or "all"
+                       cellMap = NULL,
                        dates   = 'all', # = dateVec, # must be posixlt?
                        returnSpatial = FALSE, # if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned
                        spdf    = NULL, # the spdf to join
@@ -63,11 +65,19 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
   
     ### reduce cells considered
     if(is.numeric(cellIDs)) {
-      data <- data[cellIDs, ] # rows are mesh cells, columns are days. `cellIDs` here needs to be an index of rows to use
+      if (is.null(cellMap)) {
+        stop('please provide a cellMap via ncvar_get(nc_cop, "cellmap")')
+      }
+      # data <- data[cellIDs, ]
+      rowToUse <- which(cellMap[1, ] %in% cellIDs)
+      data      <- data[rowToUse, ] #data.frame(t(chead.altq[rowToUse, ]))
+      # data <- data[cellIDs, ] # rows are mesh cells, columns are days. `cellIDs` here needs to be an index of rows to use
     } else { # if 'all'
+      ### may still need the cellMap, since these ncdf and mesh cell numbering not necessarily in the same order
       cellIDs <- 1:nrow(data) # needed for returnSpatial = TRUE
     }
     
+    yearBegin <- yearBegin - 1 # change to 0-11 scale
     ### if year used isn't calendar year, adjust dates. Note: dates$mo ranges from 0 - 11
     ### could also move this outside the function
     if (yearBegin == 0) {

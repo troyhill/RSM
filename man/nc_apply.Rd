@@ -7,6 +7,7 @@
 nc_apply(
   data,
   cellIDs = "all",
+  cellMap = NULL,
   dates = "all",
   returnSpatial = FALSE,
   spdf = NULL,
@@ -21,6 +22,8 @@ nc_apply(
 \item{data}{target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`}
 
 \item{cellIDs}{which cellIDs to use? A numeric vector or "all"}
+
+\item{cellMap}{if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.}
 
 \item{dates}{a POSIXlt vector of dates}
 

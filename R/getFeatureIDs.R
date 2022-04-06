@@ -6,15 +6,12 @@
 #' @param  shpFeature       an sf object with the indicator region, transect, point
 #' @param  mesh             sf object with model mesh cells and cell ID data (mesh must have a column named "CellId")
 #' @param  cellIDcolumn     name of column containing cell identifiers. Case insensitive.
-#' @param returnType        class of spatial data returned. Can be 'sf' or 'spatVector' (default is the latter)
 #'
-#' @return a list with two elements: a vector of cell IDs, and (2) a spatial object (sf or spatVector) with the intersection of the mesh and the input shapefile
+#' @return a list with three elements: a vector of cell IDs, (2) a vector indexing selected cells in the original mesh, and (3) a SpatVector object with the intersection of the mesh and the input shapefile
 #'
-#' @importFrom sf     st_transform
-#' @importFrom sf     st_crs
+#' @importFrom terra  project
 #' @importFrom terra  crop
 #' @importFrom terra  vect
-#' @importFrom sf     st_as_sf
 #' 
 #' @export
 #' 
@@ -26,9 +23,8 @@
 
 
 getFeatureIDs <- function(shpFeature, # = fireHydro::BICY_EVER_PlanningUnits, # test that this works on points, lines, polygons. MUST BE A spatial*DF  
-                          mesh = sf::read_sf(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package="RSM"),"nsrsm_mesh_landuse"),# mesh must have a column named "CellId"
-                          cellIDcolumn = "CellId",
-                          returnType = 'sf') { 
+                          mesh = vect(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package="RSM"),"nsrsm_mesh_landuse"),# mesh must have a column named "CellId"
+                          cellIDcolumn = "CellId") { 
   # ### make CRS of shpFeature == mesh
   # shpFeature <- as(fireHydro::BICY_EVER_PlanningUnits, 'Spatial')
   # mesh <- readOGR(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package="RSM"),"nsrsm_mesh_landuse")
@@ -46,23 +42,31 @@ getFeatureIDs <- function(shpFeature, # = fireHydro::BICY_EVER_PlanningUnits, # 
   # options(sf_max.plot=1)
   # shpFeature <- fireHydro::BICY_EVER_PlanningUnits
   # mesh <- sf::read_sf(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package="RSM"),"nsrsm_mesh_landuse")
+  if (!class(mesh) == 'SpatVector') {
+    mesh <- terra::vect(mesh)
+  }
+  if (!class(shpFeature) == 'SpatVector') {
+    shpFeature <- terra::vect(shpFeature)
+  }
   
-  shpFeature <- sf::st_transform(x = shpFeature, crs = sf::st_crs(mesh))
+  shpFeature <- terra::project(x = shpFeature, y = mesh) #, crs = terra::crs(mesh, proj = TRUE))
   
   # plot(st_geometry(shpFeature))
   # plot(mesh, add = TRUE)
   # plot(st_geometry(shpFeature), add = TRUE)
   ### clip
-  int <- terra::crop(x = terra::vect(mesh),  y = terra::vect(shpFeature)) 
+  int <- terra::crop(x = mesh,  y = shpFeature) 
   ### pull and return cellIDs
   plot(int)
   getName <- grep(x = toupper(names(int)),   pattern = toupper(cellIDcolumn)) 
   returnIDs <- as.data.frame(int[, getName])
   
-  if (returnType == 'sf') { 
-    int <- sf::st_as_sf(int)
-  }
-  invisible(list(cellIDs = as.numeric(returnIDs[, 1]), mesh = int[, getName]))
+  ### which cells were selected (by index)?
+  # returnIDs
+  cellIndex <- which(as.numeric(terra::values(mesh[, grep(x = toupper(names(mesh)),   pattern = toupper(cellIDcolumn))])[, 1]) %in% as.numeric(returnIDs[, 1]))
+  invisible(list(cellIDs = as.numeric(returnIDs[, 1]), 
+                 cellIndex = cellIndex,
+                 mesh = int[, getName]))
   
 }
 

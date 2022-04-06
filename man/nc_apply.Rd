@@ -7,6 +7,7 @@
 nc_apply(
   data,
   cellIDs = "all",
+  cellMap = NULL,
   dates = "all",
   returnSpatial = FALSE,
   spdf = NULL,
@@ -22,11 +23,13 @@ nc_apply(
 
 \item{cellIDs}{which cellIDs to use? A numeric vector or "all"}
 
+\item{cellMap}{if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.}
+
 \item{dates}{a POSIXlt vector of dates}
 
 \item{returnSpatial}{if TRUE, a joined sf is returned. If FALSE, a dataframe is returned.}
 
-\item{spdf}{the sf object to join}
+\item{spdf}{the spatial object to join output to}
 
 \item{yearBegin}{first month of year}
 
@@ -38,6 +41,14 @@ nc_apply(
 }
 \value{
 output is a vector with the value returned by "func" applied to each year
+
+#' @examples
+
+\dontrun{
+### default behavior is to return data from the most recent date
+
+
+}
 }
 \description{
 applies a function to a netCDF object

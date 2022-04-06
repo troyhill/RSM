@@ -6,10 +6,9 @@
 \usage{
 getFeatureIDs(
   shpFeature,
-  mesh = sf::read_sf(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp",
-    package = "RSM"), "nsrsm_mesh_landuse"),
-  cellIDcolumn = "CellId",
-  returnType = "sf"
+  mesh = vect(system.file("extdata/gis/nsrsm_v352", "nsrsm_mesh_landuse.shp", package =
+    "RSM"), "nsrsm_mesh_landuse"),
+  cellIDcolumn = "CellId"
 )
 }
 \arguments{
@@ -18,11 +17,9 @@ getFeatureIDs(
 \item{mesh}{sf object with model mesh cells and cell ID data (mesh must have a column named "CellId")}
 
 \item{cellIDcolumn}{name of column containing cell identifiers. Case insensitive.}
-
-\item{returnType}{class of spatial data returned. Can be 'sf' or 'spatVector' (default is the latter)}
 }
 \value{
-a list with two elements: a vector of cell IDs, and (2) a spatial object (sf or spatVector) with the intersection of the mesh and the input shapefile
+a list with three elements: a vector of cell IDs, (2) a vector indexing selected cells in the original mesh, and (3) a SpatVector object with the intersection of the mesh and the input shapefile
 }
 \description{
 Extracts cell IDs from a model mesh for each indicator region. Currently only supports sf objects

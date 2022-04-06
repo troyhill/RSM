@@ -28,19 +28,26 @@ vargs <- commandArgs(trailingOnly = TRUE)
 
 print(vargs)
 
-parentFolder <- vargs[2]
-RSM_type     <- vargs[3] # 'RSMGL' or 'RSMBN'
-dataType     <- vargs[4] # "FLOW" or "STAGE" # would use toupper() but maybe some datatypes are case sensitive
-stations     <- strsplit(vargs[5], ",")[[1]] # remove all whitespace
-endYear      <- vargs[6] # 2005 or 2016
-categoryType <- ifelse(length(vargs) == 7, vargs[7], 'SIMULATED')
+libraryLoc   <- vargs[2]
+parentFolder <- vargs[3]
+RSM_type     <- vargs[4] # 'RSMGL' or 'RSMBN'
+dataType     <- vargs[5] # "FLOW" or "STAGE" # would use toupper() but maybe some datatypes are case sensitive
+stations     <- strsplit(vargs[6], ",")[[1]] # remove all whitespace
+endYear      <- vargs[7] # 2005 or 2016
+categoryType <- ifelse(length(vargs) == 8, vargs[8], 'SIMULATED')
 
 
 
 ### this is important - set to DSSVue location before loading dssrip
 options(dss_override_location = "C:\\Program Files (x86)\\HEC\\HEC-DSSVue-v3.0.00.212\\")
 
-library(dssrip)
+library(rJava, lib.loc = libraryLoc)
+library(xts, lib.loc = libraryLoc)
+library(zoo, lib.loc = libraryLoc)
+library(stringr, lib.loc = libraryLoc)
+library(data.table, lib.loc = libraryLoc)
+library(plyr, lib.loc = libraryLoc)
+library(dssrip, lib.loc = libraryLoc)
 
 # myFile <- opendss("G:\\data\\models\\LOSOM\\Iteration_3\\NA25\\RSMBN_output.dss")
 # dat$lok_flow_south <- dat$S351 + dat$S354

@@ -11,7 +11,9 @@ extractDSS(
   stations = "LOK,WCA1",
   category = "SIMULATED",
   endYear = 2016,
-  script = system.file("extdata\\\\scripts", "script_extractDSS.R", package = "RSM")
+  script = system.file("extdata\\\\scripts", "script_extractDSS.R", package = "RSM"),
+  rVersion = Sys.getenv("R_HOME"),
+  libraryLoc = .libPaths()
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ extractDSS(
 \item{endYear}{final year in .dss data series. Typically 2005 (COP) or 2016 (default; LOSOM etc.). The period of record used may change in the future}
 
 \item{script}{script run in 32-bit R to extract data from DSS files.}
+
+\item{rVersion}{parent directory for the version of R dssrip should use (same form as Sys.getenv("R_HOME")). There must be a 32-bit R version installed. This argument is used in a system call.}
+
+\item{libraryLoc}{library location to use (need to set this if using an old version of R). This argument is used in a system call.}
 }
 \value{
 output           an .RData file saved in `parentDirectory` and labeled with the `dataType` and date.
@@ -41,6 +47,8 @@ extractDSS(parentFolder = 'G:\\\\data\\\\models\\\\LOSOM\\\\Iteration_3\\\\sensi
            stations     = 'LOK,WCA1',
            category     = 'SIMULATED',
            endYear      = 2016,
-           script       = system.file("extdata\\\\scripts","script_extractDSS.R",package="RSM"))
+           script       = system.file("extdata\\\\scripts","script_extractDSS.R",package="RSM"),
+           rVersion     = "C:/PROGRA~1/R/R-40~1.5"),
+           libraryLoc = "C:/Users/tdh/Documents/R/win-library/4.0"
 
 }

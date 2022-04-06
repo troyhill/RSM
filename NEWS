@@ -1,4 +1,4 @@
-RSM version 0.0.10 (release date: TBD)
+RSM version 0.0.11 (release date: 2022-04-06)
 ==================
 Changes:
 * removed raster, rgdal, rgeos, sp dependencies. Transitioned to terra/sf.

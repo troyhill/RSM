@@ -13,6 +13,7 @@ nc_apply(
   spdf = NULL,
   yearBegin = 5,
   yearlength = 12,
+  useParallel = FALSE,
   includeMean = TRUE,
   func = mean,
   ...

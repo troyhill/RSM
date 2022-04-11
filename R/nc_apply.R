@@ -46,6 +46,7 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
                        returnSpatial = FALSE, # if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned
                        spdf    = NULL, # the spdf to join
                        yearBegin     = 5, yearlength = 12, # first month and length of time period of interest
+                       useParallel = FALSE,
                        includeMean   = TRUE, # includes a column averaging annual values if TRUE
                        func    = mean, ...) {
     # output is a vector with the longest continuous inundation period for each year
@@ -93,34 +94,50 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
     
     # print(expand_ellipsis(...))
     
-    # library(parallel)
-    cl <- parallel::makeCluster(parallel::detectCores())
-    # parallel::clusterExport(cl=cl, varlist= names(expand_ellipsis(...)), envir = environment())# .GlobalEnv)
-    
-    for (i in 1:length(unique(dates2$year))) {
+    if (!useParallel) {
+      dat        <- data.frame(t(data))
+      names(dat) <- cellIDs
+      dat$date <- dates
+      ### TODO: accommodate water years etc
+      yearVec <- as.numeric(format(dat$date, '%Y'))
       
-      ### parallelized version
-      yrVals <- parallel::parApply(cl = cl, MARGIN = 1,
-                                   X = data[, which(dates2$year == unique(dates2$year)[i])], # export "threshold", "output"
-                                   #1:nrow(data[1:2, dates2$year == i]),
-                                   FUN = func, ...) # , na.rm = TRUE) #
-      # yrVals <- parallel::parApply(cl = cl, MARGIN = 1,
-      #                              X = data[, which(dates2$year == unique(dates2$year)[i])], # export "threshold", "output"
-      #                              #1:nrow(data[1:2, dates2$year == i]),
-      #                              FUN = hydroperiod, continuous = FALSE)
-      # yrVals <- parallel::clusterMap(cl = cl, #MARGIN = 1, 
-      #                                X = data[, dates2$year == unique(dates2$year)[i]], # export "threshold", "output"
-      #                                #1:nrow(data[1:2, dates2$year == i]), 
-      #                                fun = func, ...) 
-      # all.equal(yrVals, yrVals2)
-      
-      if(i > 1) {
-        returnDat <- cbind(returnDat, yrVals)
-      } else {
-        returnDat <- yrVals
+      for (i in 1:length(unique(yearVec))) {
+        newDat <- dat[as.numeric(yearVec) == as.numeric(unique(yearVec)[i]), !grepl(x = tolower(names(dat)), pattern = 'year|date')]
+        dat.tmp <- data.frame(t(apply(newDat, 2, FUN = function(x) {func(x, ...)}
+          ### change to func, ...
+          # hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)}
+          )))
+        # dat.tmp$year <- unique(yearVec)[i]
+        if (i == 1) {
+          returnDat2 <- dat.tmp
+        } else {
+          returnDat2 <- rbind(returnDat2, dat.tmp) # columns = cells, rows = years
+        }
       }
+      returnDat <- t(returnDat2) # columns = years, rows = cells
     }
-    parallel::stopCluster(cl)
+    
+    if (useParallel) {
+      ### this may not work, doesn't track with non-parallel output. includes output for all cells
+      # library(parallel)
+      cl <- parallel::makeCluster(parallel::detectCores())
+      # parallel::clusterExport(cl=cl, varlist= names(expand_ellipsis(...)), envir = environment())# .GlobalEnv)
+      
+      for (i in 1:length(unique(dates2$year))) {
+        ### parallelized version
+        yrVals <- parallel::parApply(cl = cl, MARGIN = 1,
+                                     X = data[, which(dates2$year == unique(dates2$year)[i])], # export "threshold", "output"
+                                     #1:nrow(data[1:2, dates2$year == i]),
+                                     FUN = func, ...) # , na.rm = TRUE) 
+        if(i > 1) {
+          returnDat <- cbind(returnDat, yrVals) # column = year, row = cell
+        } else {
+          returnDat <- yrVals
+        }
+      }
+      parallel::stopCluster(cl)
+      
+    }
     returnDat        <- as.data.frame(returnDat)
     names(returnDat) <- paste0("yr", (1899 + unique(dates2$year)[1]) + 1:length(unique(dates2$year))) # I go back and forth about whether it's best to use dates (calendar year) or dates2 (WY/transformed year). 
     
@@ -134,6 +151,13 @@ nc_apply <- function(data, #= chead.ecb,    # function applied to each row in da
       returnDat <- cbind(spdf, returnDat)#, by = cellNames)
       # plot(returnDat2, 'returnDat')
       # print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
+      
+      ### should be all equal
+      # nrow(spdf) # 1209
+      # nrow(returnDat) # why not equal? cells not split - 
+      # length(unique(spdf$CellId)) # 1209
+      # length(unique(cellIDs)) # what is going on 1209
+      
     }
     
     # if ((returnSpatial == TRUE) && !is.null(spdf)) {

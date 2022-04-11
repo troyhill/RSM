@@ -14,9 +14,5 @@
 
 is.rsm <- function(x) {
   
-  if (class(x) %in% 'rsm') {
-    return(TRUE)
-  } else {
-    return(FALSE)
-  }
+  return(any(class(x) %in% 'rsm'))
 }

@@ -28,11 +28,11 @@ rsm_apply(
 
 \item{yearBegin}{first month of year}
 
+\item{yearLength}{length of "year" (units = months)}
+
 \item{spdf}{the spatial object to join output to}
 
 \item{func}{function to apply to each year and each cell}
-
-\item{yearlength}{length of "year" (units = months)}
 
 \item{includeMean}{if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)}
 }
@@ -48,17 +48,14 @@ applies a function to RSM netcdf data
 altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
 
 copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
-copMesh$CellId <- as.integer(copMesh$CellId) # necessary?
 
 hp.altq <- rsm_apply(data = altq$data,
 dates = altq$dateVec,
 cellMap = altq$cellMap,
-cellIDs = copMesh$cellIDs,
+cellIDs = copMesh$CellId,
 yearBegin = 1,
 yearlength = 12,
 spdf = copMesh,
-returnSpatial = TRUE,
-useParallel = FALSE,
 func = function(x) {hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)})  
 
 }

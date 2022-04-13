@@ -9,7 +9,7 @@
 #' @param  dates         a POSIXlt vector of dates
 #' @param  spdf          the spatial object to join output to
 #' @param  yearBegin     first month of year
-#' @param  yearlength    length of "year" (units = months)
+#' @param  yearLength    length of "year" (units = months)
 #' @param  includeMean    if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)
 #' @param  func          function to apply to each year and each cell
 #' 
@@ -22,17 +22,14 @@
 #' altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
 #' 
 #' copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
-#' copMesh$CellId <- as.integer(copMesh$CellId) # necessary?
 #' 
 #' hp.altq <- rsm_apply(data = altq$data,
 #' dates = altq$dateVec,
 #' cellMap = altq$cellMap,
-#' cellIDs = copMesh$cellIDs,
+#' cellIDs = copMesh$CellId,
 #' yearBegin = 1,
 #' yearlength = 12,
 #' spdf = copMesh,
-#' returnSpatial = TRUE,
-#' useParallel = FALSE,
 #' func = function(x) {hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)})  
 #' 
 #' }
@@ -113,6 +110,6 @@ rsm_apply <- function(data,#    = altq$data,
   dat.fin2 <- terra::merge(spdf, dat.fin2, by = "CellId")
   dat.fin2 <- terra::crop(dat.fin2, spdf)
   dat.fin2$mean <- rowMeans(data.frame(dat.fin2[, grep(x = names(dat.fin2), pattern = 'yr')]), na.rm = TRUE)
-  terra::plot(dat.fin2, 'mean', type = 'continuous', axes = FALSE)
+  terra::plot(dat.fin2, 'mean', type = 'continuous', axes = FALSE, main = 'Annual mean')
   return(dat.fin2)
 }

@@ -63,8 +63,8 @@ getFeatureIDs <- function(shpFeature, # = fireHydro::BICY_EVER_PlanningUnits, # 
   
   ### which cells were selected (by index)?
   # returnIDs
-  cellIndex <- which(as.numeric(terra::values(mesh[, grep(x = toupper(names(mesh)),   pattern = toupper(cellIDcolumn))])[, 1]) %in% as.numeric(returnIDs[, 1]))
-  invisible(list(cellIDs = as.numeric(returnIDs[, 1]), 
+  cellIndex <- which(as.integer(terra::values(mesh[, grep(x = toupper(names(mesh)),   pattern = toupper(cellIDcolumn))])[, 1]) %in% as.integer(returnIDs[, 1]))
+  invisible(list(cellIDs = as.integer(returnIDs[, 1]), 
                  cellIndex = cellIndex,
                  mesh = int[, getName]))
   

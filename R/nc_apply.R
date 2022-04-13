@@ -1,13 +1,12 @@
-#' nc_apply
+#' rsm_apply
 #'
-#' @description applies a function to a netCDF object
+#' @description applies a function to RSM netcdf data
 #' 
 #'  
 #' @param  data          target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`
 #' @param  cellIDs       which cellIDs to use? A numeric vector or "all"
 #' @param  cellMap       if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.
 #' @param  dates         a POSIXlt vector of dates
-#' @param  returnSpatial if TRUE, a joined sf is returned. If FALSE, a dataframe is returned.
 #' @param  spdf          the spatial object to join output to
 #' @param  yearBegin     first month of year
 #' @param  yearlength    length of "year" (units = months)
@@ -15,164 +14,105 @@
 #' @param  func          function to apply to each year and each cell
 #' 
 #'
-#' @return output is a vector with the value returned by "func" applied to each year
+#' @return output is a terra SpatVector polygon object with the values returned by "func" applied to each year and each cell
 #'
-#'#' @examples
+#' @examples
 #' 
 #' \dontrun{
-#' ### default behavior is to return data from the most recent date
+#' altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
 #' 
+#' copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
+#' copMesh$CellId <- as.integer(copMesh$CellId) # necessary?
+#' 
+#' hp.altq <- rsm_apply(data = altq$data,
+#' dates = altq$dateVec,
+#' cellMap = altq$cellMap,
+#' cellIDs = copMesh$cellIDs,
+#' yearBegin = 1,
+#' yearlength = 12,
+#' spdf = copMesh,
+#' returnSpatial = TRUE,
+#' useParallel = FALSE,
+#' func = function(x) {hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)})  
 #' 
 #' }
 #' 
 #' 
 #' @importFrom zoo    as.yearmon
-#' @importFrom parallel makeCluster
-#' @importFrom parallel stopCluster
-#' @importFrom parallel detectCores
-#' @importFrom parallel parApply
-#' @importFrom terra merge
+#' @importFrom terra crop
+#' @importFrom terra plot
+#' @importFrom terra vect
 #' 
 #' @export
 #' 
 
 ### TODO: have option to summarize by year, year-mo, etc. 
 
-nc_apply <- function(data, #= chead.ecb,    # function applied to each row in dataframe. units = cm w.r.t. sediment surface. 
-                       ### this function takes input functions that handle multiple arguments
-                       cellIDs = "all", # which cellIDs to use? A numeric vector of index values to use, or "all"
-                       cellMap = NULL,
-                       dates   = 'all', # = dateVec, # must be posixlt?
-                       returnSpatial = FALSE, # if TRUE, a joined spdf is returned. If FALSE, a dataframe is returned
-                       spdf    = NULL, # the spdf to join
-                       yearBegin     = 5, yearlength = 12, # first month and length of time period of interest
-                       useParallel = FALSE,
-                       includeMean   = TRUE, # includes a column averaging annual values if TRUE
-                       func    = mean, ...) {
-    # output is a vector with the longest continuous inundation period for each year
-    # threshold should be in the same units as depth data
-    # time units are time units in data - days per year
-    
-    # TODO: fix hardcoded reference to cellId column name at end of function
-  # data = altq.dat
-    if (suppressWarnings(is.rsm(data))) {
-      cellIDs <- data$cellIDs #which(data$cellMap[1,] %in% data$cellIDs) # data$cellIDs # why isn't cellsToUse working here? need an index
-      dates   <- data$dates
-      returnSpatial <- TRUE
-      spdf    <- data$spdf
-      data    <- data$stage
-    }
+rsm_apply <- function(data,#    = altq$data, 
+                     dates,#   = altq$dateVec,
+                     cellMap,# = altq$cellMap,
+                     cellIDs,# = ENP_cellIDs$cellIDs, # commonCells2, #targetHydro$CellId, # 
+                     yearBegin  = 1, 
+                     yearLength = 12,
+                     spdf,# = copMesh, #  ENP_cellIDs$mesh, 
+                     returnSpatial = TRUE,
+                     func = function(x) {hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)}) {
+  # if (suppressWarnings(is.rsm(data))) {
+  #   cellIDs <- data$cellIDs #which(data$cellMap[1,] %in% data$cellIDs) # data$cellIDs # why isn't cellsToUse working here? need an index
+  #   dates   <- data$dates
+  #   returnSpatial <- TRUE
+  #   spdf    <- data$spdf
+  #   data    <- data$stage
+  # }
   
-  
-    ### reduce cells considered
-    if(is.numeric(cellIDs)) {
-      if (is.null(cellMap)) {
-        stop('please provide a cellMap via ncvar_get(nc_cop, "cellmap")')
-      }
-      # data <- data[cellIDs, ]
-      rowToUse <- which(cellMap[1, ] %in% cellIDs)
-      data      <- data[rowToUse, ] #data.frame(t(chead.altq[rowToUse, ]))
-      # data <- data[cellIDs, ] # rows are mesh cells, columns are days. `cellIDs` here needs to be an index of rows to use
-    } else { # if 'all'
-      ### may still need the cellMap, since these ncdf and mesh cell numbering not necessarily in the same order
-      cellIDs <- 1:nrow(data) # needed for returnSpatial = TRUE
-    }
-    
-    yearBegin <- yearBegin - 1 # change to 0-11 scale
-    ### if year used isn't calendar year, adjust dates. Note: dates$mo ranges from 0 - 11
-    ### could also move this outside the function
-    if (yearBegin == 0) {
-      dateOffset <- 0 # this ensures that dateOffset is zero when calendar years are sought
-    } else {
-      dateOffset <- (yearBegin - 1)/12 # units = fractional years. verified that this results in correct offset.
-    }
-    # library(zoo)
-    dates2     <- as.POSIXlt(zoo::as.yearmon(dates) + dateOffset) # days are irrelevant after this - all days set to 1st of month.
-    ### TODO: remove any years <12 months
-    # table(dates2)
-    ### dates are now "water year" style - year 2005 starts in may 2004, ends in april 2005
-    
-    # print(expand_ellipsis(...))
-    
-    if (!useParallel) {
-      dat        <- data.frame(t(data))
-      names(dat) <- cellIDs
-      dat$date <- dates
-      ### TODO: accommodate water years etc
-      yearVec <- as.numeric(format(dat$date, '%Y'))
-      
-      for (i in 1:length(unique(yearVec))) {
-        newDat <- dat[as.numeric(yearVec) == as.numeric(unique(yearVec)[i]), !grepl(x = tolower(names(dat)), pattern = 'year|date')]
-        dat.tmp <- data.frame(t(apply(newDat, 2, FUN = function(x) {func(x, ...)}
-          ### change to func, ...
-          # hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)}
-          )))
-        # dat.tmp$year <- unique(yearVec)[i]
-        if (i == 1) {
-          returnDat2 <- dat.tmp
-        } else {
-          returnDat2 <- rbind(returnDat2, dat.tmp) # columns = cells, rows = years
-        }
-      }
-      returnDat <- t(returnDat2) # columns = years, rows = cells
-    }
-    
-    if (useParallel) {
-      ### this may not work, doesn't track with non-parallel output. includes output for all cells
-      # library(parallel)
-      cl <- parallel::makeCluster(parallel::detectCores())
-      # parallel::clusterExport(cl=cl, varlist= names(expand_ellipsis(...)), envir = environment())# .GlobalEnv)
-      
-      for (i in 1:length(unique(dates2$year))) {
-        ### parallelized version
-        yrVals <- parallel::parApply(cl = cl, MARGIN = 1,
-                                     X = data[, which(dates2$year == unique(dates2$year)[i])], # export "threshold", "output"
-                                     #1:nrow(data[1:2, dates2$year == i]),
-                                     FUN = func, ...) # , na.rm = TRUE) 
-        if(i > 1) {
-          returnDat <- cbind(returnDat, yrVals) # column = year, row = cell
-        } else {
-          returnDat <- yrVals
-        }
-      }
-      parallel::stopCluster(cl)
-      
-    }
-    returnDat        <- as.data.frame(returnDat)
-    names(returnDat) <- paste0("yr", (1899 + unique(dates2$year)[1]) + 1:length(unique(dates2$year))) # I go back and forth about whether it's best to use dates (calendar year) or dates2 (WY/transformed year). 
-    
-    if ((returnSpatial == TRUE) && !is.null(spdf)) {
-      ### 
-      # cellNames <- names(spdf)[1]# "CellId" column
-      # yrDat <- cbind(cellIDs, returnDat)
-      # names(yrDat)[1] <- cellNames # label "CellId" column
-      ### merge data with spdf
-      # returnDat2 <- terra::merge(spdf, returnDat)#, by = cellNames)
-      returnDat <- cbind(spdf, returnDat)#, by = cellNames)
-      # plot(returnDat2, 'returnDat')
-      # print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
-      
-      ### should be all equal
-      # nrow(spdf) # 1209
-      # nrow(returnDat) # why not equal? cells not split - 
-      # length(unique(spdf$CellId)) # 1209
-      # length(unique(cellIDs)) # what is going on 1209
-      
-    }
-    
-    # if ((returnSpatial == TRUE) && !is.null(spdf)) {
-    #   cellNames <- names(spdf)[1]# "CellId" column
-    #   yrDat <- cbind(cellIDs, returnDat)
-    #   names(yrDat)[1] <- cellNames # label "CellId" column
-    #   ### merge data with spdf
-    #   returnDat <- terra::merge(spdf, yrDat, by = cellNames)
-    #   # print(sp::spplot(returnDat, zcol = names(yrDat)[2])) # an example plot
-    # }
-    
-    if (includeMean) {
-      returnDat$mean <- rowMeans(data.frame(returnDat[, grep(x = names(returnDat), pattern = 'yr')]), na.rm = TRUE)
-    }
-    
-    invisible(returnDat)
+  ### input checks
+  if(!any(grepl(x = class(spdf), pattern = 'SpatVector'))) {
+    spdf <- terra::vect(spdf)
   }
   
+  cellValue <- sort(as.integer(cellIDs)) # must be integer, must be in ascending order.
+  rowToUse <- which(cellMap[1, ] %in% cellValue)
+  dat      <- data.frame(t(data[rowToUse, ]))
+  names(dat) <- cellValue
+  dat$date <- dates
+  dat$year <- as.numeric(format(dat$date, '%Y'))
+  # head(dat)
+  
+  ### year/season conversions
+  ### adjust dates
+  yearBegin <- yearBegin - 1 # change to 0-11 scale
+  dates3 <- zoo::as.yearmon(dates) - yearBegin/12
+  dates4 <- dates3[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength]
+  dat$adjusted.year <- format(dates3, format = "%Y")
+  dat <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
+  
+  ### remove incomplete adjusted years
+  yrsToRemove <- unique(format(dates4, format = "%Y"))[which(table(format(dates4, format = "%Y")) < yearLength*30)]
+  if (length(yrsToRemove) > 0) {
+    message('based on yearBegin and yearLength arguments, the following adjusted years were removed for incompleteness: ', paste0(yrsToRemove, collapse = ","))
+  }
+  newDatYears <- format(dates4, format = '%Y')
+  newDatYears <- newDatYears[!(newDatYears %in% yrsToRemove)]
+  
+  for (i in 1:length(unique(newDatYears))) {
+    newDat <- dat[as.numeric(dat$adjusted.year) == as.numeric(unique(newDatYears)[i]), !grepl(x = tolower(names(dat)), pattern = 'year|date')]
+    dat.tmp <- data.frame(t(apply(newDat, 2, FUN = func)))
+    dat.tmp$year <- unique(newDatYears)[i] # adjusted year
+    if (i == 1) {
+      dat.fin <- dat.tmp
+    } else {
+      dat.fin <- rbind(dat.fin, dat.tmp)
+    }
+  }
+  
+  # summary(dat.fin) # every column is a cell, rows are years
+  dat.fin2 <- data.frame(t(dat.fin[, !grepl(x = names(dat.fin), pattern = 'year')])) # head(dat.fin2[, 1:5])
+  names(dat.fin2) <- paste0("yr", unique(newDatYears)) # I go back and forth about whether it's best to use dates (calendar year) or dates2 (WY/transformed year). 
+  dat.fin2$CellId <- substr(row.names(dat.fin2), 2, nchar(row.names(dat.fin2)))
+  # dat.fin2[match(cellMap[1, ], dat.fin2$CellId), ]
+  dat.fin2 <- terra::merge(spdf, dat.fin2, by = "CellId")
+  dat.fin2 <- terra::crop(dat.fin2, spdf)
+  dat.fin2$mean <- rowMeans(data.frame(dat.fin2[, grep(x = names(dat.fin2), pattern = 'yr')]), na.rm = TRUE)
+  terra::plot(dat.fin2, 'mean', type = 'continuous', axes = FALSE)
+  return(dat.fin2)
+}

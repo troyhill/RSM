@@ -25,16 +25,6 @@ pulls stage data from an RSM output netCDF file
 addr <- "G:/data/models/COP/ALTQ/globalmonitors.nc"
 altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
 
-WCA3_cellIDs <- getFeatureIDs(shpFeature = wca3,
-  as(fireHydro::BICY_EVER_PlanningUnits,  "Spatial"),
-  mesh = copMesh, cellIDcolumn = "CellId")
-  
-  hp.altq <- nc_apply(data = altq$data, # chead.altq,
-  dates = altq$dateVec,
-  yearBegin = 1, 
-  yearlength = 12,
-  spdf = ENP_cellIDs$mesh, returnSpatial = TRUE,
-  func = hydroperiod, threshold = 0, continuous = FALSE) 
 }
 
 

@@ -46,20 +46,21 @@
 ### TODO: have option to summarize by year, year-mo, etc. 
 
 rsm_apply <- function(data,#    = altq$data, 
-                     dates,#   = altq$dateVec,
-                     cellMap,# = altq$cellMap,
+                     dates   = NULL,#   = altq$dateVec,
+                     cellMap = NULL,# = altq$cellMap,
                      cellIDs,# = ENP_cellIDs$cellIDs, # commonCells2, #targetHydro$CellId, # 
                      yearBegin  = 1, 
                      yearLength = 12,
                      spdf,# = copMesh, #  ENP_cellIDs$mesh, 
                      returnSpatial = TRUE,
-                     func = function(x) {hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)}) {
+                     func = function(x) {mean(x)}) {
   # if (suppressWarnings(is.rsm(data))) {
-  #   cellIDs <- data$cellIDs #which(data$cellMap[1,] %in% data$cellIDs) # data$cellIDs # why isn't cellsToUse working here? need an index
-  #   dates   <- data$dates
+  #   #cellIDs <- data$cellIDs #which(data$cellMap[1,] %in% data$cellIDs) # data$cellIDs # why isn't cellsToUse working here? need an index
+  #   dates   <- data$dateVec
   #   returnSpatial <- TRUE
-  #   spdf    <- data$spdf
-  #   data    <- data$stage
+  #   #spdf    <- data$spdf # not currently included in rsm objects
+  #   data    <- data$data
+  #   cellMap <- data$cellMap
   # }
   
   ### input checks

@@ -41,8 +41,11 @@ loadRSM <- function(ncdf_address, variable = 'ComputedHead', subtractTopo = TRUE
   ### Generate date vector 
   dateVec     <- RSM::getDateVector(nc_cop)
   
-  return(list(dateVec = dateVec,
-              data    = chead.altq,
-              cellMap = cellMap))
+  outList <- list(dateVec = dateVec,
+                  data    = chead.altq,
+                  cellMap = cellMap)
+  class(outList) <- c("rsm", grep(x = class(outList), pattern = "rsm", invert = TRUE, value = TRUE)) 
+  
+  return(outList)
 }
 

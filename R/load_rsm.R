@@ -5,18 +5,16 @@
 #'  
 #' @param  ncdf_address   address of the netCDF file
 #' @param  variable       name of variable to extract from the netCDF
-#' @param  subtractTopo   should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`) or stages (`subtractTopo = FALSE`) be returned?
+#' @param  subtractTopo   should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`; units = feet relative to soil surface) or stages (`subtractTopo = FALSE`; units = feet NGVD29) be returned?
 #' 
 #'
-#' @return a list with three elements: (1) a vector of dates in the time series, (2) stage data matrices (not explicitly geospatial data), and (3) a cell map that links data to cells in the RSM mesh
+#' @return a list with class `rsm` containing three elements: (1) a vector of dates in the time series, (2) stage data matrices (not explicitly geospatial data), and (3) a cell map that links data to cells in the RSM mesh
 #'
 #' @examples
 #' 
 #' \dontrun{
 #' addr <- "G:/data/models/COP/ALTQ/globalmonitors.nc"
-#' altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
-#' 
-#
+#' altq <- loadRSM(ncdf_address = addr)
 #' }
 #' 
 #' 
@@ -41,8 +39,11 @@ loadRSM <- function(ncdf_address, variable = 'ComputedHead', subtractTopo = TRUE
   ### Generate date vector 
   dateVec     <- RSM::getDateVector(nc_cop)
   
-  return(list(dateVec = dateVec,
-              data    = chead.altq,
-              cellMap = cellMap))
+  rsmList <- list(dates   = dateVec,
+                  data    = chead.altq,
+                  cellMap = cellMap)
+  class(rsmList) <- c("rsm", grep(x = class(rsmList), pattern = "rsm", invert = TRUE, value = TRUE)) 
+  
+  return(rsmList)
 }
 

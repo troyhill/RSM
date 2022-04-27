@@ -11,10 +11,10 @@ loadRSM(ncdf_address, variable = "ComputedHead", subtractTopo = TRUE)
 
 \item{variable}{name of variable to extract from the netCDF}
 
-\item{subtractTopo}{should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`) or stages (`subtractTopo = FALSE`) be returned?}
+\item{subtractTopo}{should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`; units = feet relative to soil surface) or stages (`subtractTopo = FALSE`; units = feet NGVD29) be returned?}
 }
 \value{
-a list with three elements: (1) a vector of dates in the time series, (2) stage data matrices (not explicitly geospatial data), and (3) a cell map that links data to cells in the RSM mesh
+a list with class `rsm` containing three elements: (1) a vector of dates in the time series, (2) stage data matrices (not explicitly geospatial data), and (3) a cell map that links data to cells in the RSM mesh
 }
 \description{
 pulls stage data from an RSM output netCDF file
@@ -23,8 +23,7 @@ pulls stage data from an RSM output netCDF file
 
 \dontrun{
 addr <- "G:/data/models/COP/ALTQ/globalmonitors.nc"
-altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
-
+altq <- loadRSM(ncdf_address = addr)
 }
 
 

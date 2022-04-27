@@ -6,35 +6,37 @@
 \usage{
 rsm_apply(
   data,
-  dates,
-  cellMap,
-  cellIDs,
+  dates = NULL,
+  cellMap = NULL,
+  mesh,
+  cellIDs = NULL,
   yearBegin = 1,
   yearLength = 12,
-  spdf,
-  returnSpatial = TRUE,
-  func = function(x) {     hydroperiod(as.numeric(x), threshold = 0, continuous =
-    FALSE) }
+  aggregation = "yr",
+  includeMean = TRUE,
+  func = function(x) {     mean(x, na.rm = TRUE) }
 )
 }
 \arguments{
-\item{data}{target object. function is applied to each row. If an `rsm` object is provided, several arguments are ignored: `cellIDs`, `dates`, `spdf`, `returnSpatial`}
+\item{data}{target object. function is applied to each row. If an `rsm` object is provided, the object is used for `cellMap` and `dates` arguments}
 
-\item{dates}{a POSIXlt vector of dates}
+\item{dates}{a POSIXlt vector of dates in the ncdf data}
 
 \item{cellMap}{if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.}
 
-\item{cellIDs}{which cellIDs to use? A numeric vector or "all"}
+\item{mesh}{the spatial object to join output to. There must be a column named 'CellId' (case sensitive) in the mesh.}
 
-\item{yearBegin}{first month of year}
+\item{cellIDs}{which cellIDs to use in analysis? A numeric vector or NULL to use all cellIDs in the mesh. There must be a column named 'CellId' (case sensitive) in the mesh.}
 
-\item{yearLength}{length of "year" (units = months)}
+\item{yearBegin}{first month of year.}
 
-\item{spdf}{the spatial object to join output to}
+\item{yearLength}{length of "year" (units = months).}
+
+\item{aggregation}{Temporal scale used for aggregating data: 'yr', 'mo', 'da'. Note: returning daily data will require a substantial amount of RAM and may crash R.}
+
+\item{includeMean}{if TRUE, a column is included that averages across all non-ID columns in the dataset}
 
 \item{func}{function to apply to each year and each cell}
-
-\item{includeMean}{if TRUE, a column is included that averages across all non-ID columns in the dataset (this is typically an annual average)}
 }
 \value{
 output is a terra SpatVector polygon object with the values returned by "func" applied to each year and each cell
@@ -55,8 +57,8 @@ cellMap = altq$cellMap,
 cellIDs = copMesh$CellId,
 yearBegin = 1,
 yearlength = 12,
-spdf = copMesh,
-func = function(x) {hydroperiod(as.numeric(x), threshold = 0, continuous = FALSE)})  
+mesh = copMesh,
+func = function(x) {hydroperiod(x, threshold = 0, continuous = FALSE)})  
 
 }
 

@@ -47,6 +47,7 @@
 ### TODO: have option to summarize by year, year-mo, etc. 
 
 rsm_apply <- function(data,#    = altq$data, 
+<<<<<<< HEAD
                      dates = NULL,#   = altq$dateVec,
                      cellMap = NULL,# = altq$cellMap,
                      mesh,# = copMesh, #  ENP_cellIDs$mesh, 
@@ -64,6 +65,28 @@ rsm_apply <- function(data,#    = altq$data,
     cellMap <- data$cellMap
     dates   <- data$dates
     data    <- data$data
+=======
+                     dates   = NULL,#   = altq$dateVec,
+                     cellMap = NULL,# = altq$cellMap,
+                     cellIDs,# = ENP_cellIDs$cellIDs, # commonCells2, #targetHydro$CellId, # 
+                     yearBegin  = 1, 
+                     yearLength = 12,
+                     spdf,# = copMesh, #  ENP_cellIDs$mesh, 
+                     returnSpatial = TRUE,
+                     func = function(x) {mean(x)}) {
+  # if (suppressWarnings(is.rsm(data))) {
+  #   #cellIDs <- data$cellIDs #which(data$cellMap[1,] %in% data$cellIDs) # data$cellIDs # why isn't cellsToUse working here? need an index
+  #   dates   <- data$dateVec
+  #   returnSpatial <- TRUE
+  #   #spdf    <- data$spdf # not currently included in rsm objects
+  #   data    <- data$data
+  #   cellMap <- data$cellMap
+  # }
+  
+  ### input checks
+  if(!any(grepl(x = class(spdf), pattern = 'SpatVector'))) {
+    spdf <- terra::vect(spdf)
+>>>>>>> 3e5fdd705b4b3cb1c634d6a6e745198f8309e8b3
   }
   
   ### input checks

@@ -24,14 +24,17 @@
 #' 
 #' copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
 #' 
-#' hp.altq <- rsm_apply(data = altq$data,
-#' dates = altq$dateVec,
-#' cellMap = altq$cellMap,
-#' cellIDs = copMesh$CellId,
+#' ### a simple function for discontinuous hydroperiod
+#' hp_discont <- function(x, threshold = 0) {
+#' outDat      <- length(which(as.numeric(x[!is.na(x)]) >= threshold))
+#' return(outDat)
+#' }
+#' 
+#' hp.altq <- rsm_apply(data = altq,
 #' yearBegin = 1,
 #' yearlength = 12,
 #' mesh = copMesh,
-#' func = function(x) {hydroperiod(x, threshold = 0, continuous = FALSE)})  
+#' func = function(x) {hp_discont(x, threshold = 0)})
 #' 
 #' }
 #' 

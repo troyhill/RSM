@@ -16,6 +16,7 @@ Depends:
     R (>= 3.5.0),
     ggplot2,
     plyr,
+    RCurl,
     ncdf4,
     terra,
     sf,

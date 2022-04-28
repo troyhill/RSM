@@ -2,12 +2,12 @@
 
 
 
-The `RSM` R package provides utilities for analysis of RSM and MDRSM model output.
+The `RSM` R package supports analysis of RSM model output.
 
 
 ## Install the package
 
-Install the RSM R package from GitHub using the following commands in the R console:
+To install the package from GitHub:
 
 ```r
 remotes::install_github("troyhill/RSM", ref = "master")

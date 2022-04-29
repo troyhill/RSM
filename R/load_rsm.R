@@ -20,6 +20,7 @@
 #' 
 #' @importFrom ncdf4 nc_open
 #' @importFrom ncdf4 ncvar_get
+#' @importFrom ncdf4 nc_close
 #' 
 #' @export
 #' 
@@ -43,6 +44,8 @@ loadRSM <- function(ncdf_address, variable = 'ComputedHead', subtractTopo = TRUE
                   data    = chead.altq,
                   cellMap = cellMap)
   class(rsmList) <- c("rsm", grep(x = class(rsmList), pattern = "rsm", invert = TRUE, value = TRUE)) 
+  
+  ncdf4::nc_close(nc_cop)
   
   return(rsmList)
 }

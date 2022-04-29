@@ -27,11 +27,12 @@
 
 getDEM <- function(ncdf_address, mesh) {
   nc_cop     <- ncdf4::nc_open(ncdf_address) #e.g. "G:/data/models/COP/ALTQ/globalmonitors.nc"
+  cellMap    <- ncdf4::ncvar_get(nc_cop, "cellmap") # 6719 columns: 1 column per cell. first row appears to be CellIds, 2nd row is an index starting at zero
   topo       <- ncdf4::ncvar_get(nc_cop, "Topography") # I think units are feet NGVD29??
   ncdf4::nc_close(nc_cop)
   
   cellValue  <- sort(as.integer(mesh$CellId)) # must be integer, must be in ascending order.
-  rowToUse   <- which(altq$cellMap[1, ] %in% cellValue)
+  rowToUse   <- which(cellMap[1, ] %in% cellValue)
   topo_df    <- data.frame(topo = topo, CellId = cellValue)
   mesh$dem   <- topo_df$topo[order(match(topo_df$CellId, mesh$CellId))]
   plot(mesh, 'dem', type = 'continuous', axes = FALSE)

@@ -18,7 +18,7 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
   
   ### get alternative names from dss addresses (should be parent folder for dss file)
   if (is.null(alternatives)) {
-    alt.names <- sapply(strsplit(dss, "/"), "[", 2)
+    alt.names <- sapply(strsplit(dss, "/|\\\\"), "[", length(strsplit(dss, "/|\\\\")[[1]])-1)
   } else {
     alt.names <- alternatives
     if (!(length(alternatives) == length(dss))) {

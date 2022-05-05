@@ -60,7 +60,7 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
       tryCatch(
         {
           tmp       <- data.frame(dssrip::getFullTSC(dss_out, paths.tmp))
-          tmp$date  <- as.POSIXct(rownames(tmp), format = "%Y-%m-%d")
+          tmp$date  <- as.Date(rownames(tmp), format = "%Y-%m-%d") - 1 # correct for rounding up of days (noon rounds up to next day)
           rownames(tmp) <- NULL
           tmp$stn   <- station[i]
           tmp$alt   <- alt.names[j]

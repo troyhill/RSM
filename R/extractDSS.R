@@ -10,7 +10,7 @@
 #' @param  endYear          final year in .dss data series. Typically 2005 (COP) or 2016 (default; LOSOM etc.). The period of record used may change in the future
 #' @param  script           script run in 32-bit R to extract data from DSS files.
 #' @param  rVersion         parent directory for the version of R dssrip should use (same form as Sys.getenv("R_HOME")). There must be a 32-bit R version installed. This argument is used in a system call.
-#' @param  libraryLoc       library location to use (need to set this if using an old version of R). This argument is used in a system call.
+#' @param  libraryLoc       library location to use (need to set this if using an old version of R). This argument is used in a system call to load packages instead of default .libPaths()
 #'  
 #' @return output           an .RData file saved in `parentDirectory` and labeled with the `dataType` and date. 
 #'
@@ -36,15 +36,22 @@ extractDSS <- function(parentFolder, # directory with folders labeled by alterna
                           stations = "LOK,WCA1", # a comma separated, single-element vector of station names. User must ensure these appear in dss files and have the specified dataType
                           category = "SIMULATED", # or 'INPUT' for e.g., regulation schedules
                           endYear  = 2016, # final year in output (not sure how to automate detection of this...)
-                          script   = system.file("extdata\\scripts", "script_extractDSS.R", package = "RSM"),
+                          script   = system.file("extdata/scripts", "script_extractDSS.R", package = "RSM"),
                           rVersion = Sys.getenv("R_HOME"),
-                          libraryLoc = .libPaths() #"C:/Users/tdh/Documents/R/win-library/4.0"
-) {
+                          libraryLoc = "C:/Users/tdh/Documents/R/win-library/4.0" # .libPaths() #
+) { # need zoo, rJava, xts, stringr, data.table, plyr, dssrip installed for i386
   stations <- gsub("\\s", "", stations) # remove all whitespace
   # dataType <- toupper(dataType) # make sure no dataTypes are case sensitive
   ### assemble arguments
   all_args <- paste(' --args', libraryLoc, parentFolder, RSM_type, dataType, stations, endYear, category)
-  system(paste0(rVersion, "\\bin\\i386\\Rscript.exe ", 
+  
+  systemCommand <- paste0(rVersion, "/bin/i386/Rscript.exe ", 
+                          shQuote(script),# "C:\\RDATA\\EVER_misc\\script_pullDSS_20211006.R"), 
+                          all_args)
+  # cat(gsub(x = "something\this//text/sucks", pattern = "\\|\\\\", replacement = "//"))
+  # systemCommand <- gsub(x = "\this//text/sucks", pattern = "\\\\", replacement = "/")
+  cat(systemCommand, '\n')
+  system(paste0(rVersion, "/bin/i386//Rscript.exe ", 
                 shQuote(script),# "C:\\RDATA\\EVER_misc\\script_pullDSS_20211006.R"), 
                 all_args))
                 # " --args G:\\data\\models\\LOSOM\\Iteration_3\\sensitivity STAGE LOK,WCA1")) 

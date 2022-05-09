@@ -4,7 +4,12 @@
 \alias{loadRSM}
 \title{loadRSM}
 \usage{
-loadRSM(ncdf_address, variable = "ComputedHead", subtractTopo = TRUE)
+loadRSM(
+  ncdf_address,
+  variable = "ComputedHead",
+  subtractTopo = TRUE,
+  divideByArea = FALSE
+)
 }
 \arguments{
 \item{ncdf_address}{address of the netCDF file}
@@ -12,6 +17,8 @@ loadRSM(ncdf_address, variable = "ComputedHead", subtractTopo = TRUE)
 \item{variable}{name of variable to extract from the netCDF}
 
 \item{subtractTopo}{should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`; units = feet relative to soil surface) or stages (`subtractTopo = FALSE`; units = feet NGVD29) be returned?}
+
+\item{divideByArea}{In development. should quantity be divided by cell area? Useful for volumetric quantities: rainfall/ET.}
 }
 \value{
 a list with class `rsm` containing three elements: (1) a vector of dates in the time series, (2) stage data matrices (not explicitly geospatial data), and (3) a cell map that links data to cells in the RSM mesh
@@ -23,7 +30,9 @@ pulls stage data from an RSM output netCDF file
 
 \dontrun{
 addr <- "G:/data/models/COP/ALTQ/globalmonitors.nc"
-altq <- loadRSM(ncdf_address = addr)
+altq <- loadRSM(ncdf_address = addr, 
+                variable     = 'ComputedHead', 
+                subtractTopo = TRUE)
 }
 
 

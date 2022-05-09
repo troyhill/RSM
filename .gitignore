@@ -25,3 +25,4 @@ temp.txt
 !\\data\\.*.RData
 !data/*
 \\docs\\Reynolds\\*.pdf$
+.Rprofile

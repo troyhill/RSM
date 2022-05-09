@@ -36,7 +36,7 @@ rsm_apply(
 
 \item{includeMean}{if TRUE, a column is included that averages across all non-ID columns in the dataset}
 
-\item{func}{function to apply to each year and each cell}
+\item{func}{function applied to the daily time series of data for each cell.}
 }
 \value{
 output is a terra SpatVector polygon object with the values returned by "func" applied to each year and each cell

@@ -12,7 +12,7 @@
 #' @param  yearLength    length of "year" (units = months).
 #' @param  aggregation    Temporal scale used for aggregating data: 'yr', 'mo', 'da'. Note: returning daily data will require a substantial amount of RAM and may crash R.
 #' @param  includeMean    if TRUE, a column is included that averages across all non-ID columns in the dataset
-#' @param  func          function to apply to each year and each cell
+#' @param  func          function applied to the daily time series of data for each cell.
 #' 
 #'
 #' @return output is a terra SpatVector polygon object with the values returned by "func" applied to each year and each cell

@@ -11,9 +11,9 @@ extractDSS(
   stations = "LOK,WCA1",
   category = "SIMULATED",
   endYear = 2016,
-  script = system.file("extdata\\\\scripts", "script_extractDSS.R", package = "RSM"),
+  script = system.file("extdata/scripts", "script_extractDSS.R", package = "RSM"),
   rVersion = Sys.getenv("R_HOME"),
-  libraryLoc = .libPaths()
+  libraryLoc = "C:/Users/tdh/Documents/R/win-library/4.0"
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ extractDSS(
 
 \item{rVersion}{parent directory for the version of R dssrip should use (same form as Sys.getenv("R_HOME")). There must be a 32-bit R version installed. This argument is used in a system call.}
 
-\item{libraryLoc}{library location to use (need to set this if using an old version of R). This argument is used in a system call.}
+\item{libraryLoc}{library location to use (need to set this if using an old version of R). This argument is used in a system call to load packages instead of default .libPaths()}
 }
 \value{
 output           an .RData file saved in `parentDirectory` and labeled with the `dataType` and date.

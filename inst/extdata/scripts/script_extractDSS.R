@@ -19,7 +19,7 @@
 
 vargs <- commandArgs(trailingOnly = TRUE)
 # vargs <- strsplit(all_args, " ")[[1]]
-# vargs <- strsplit(" --args G:\\data\\models\\COP RSMGL STAGE ENP_NP-205,ENP_SPARO 2005 SIMULATED", " ")[[1]]
+# vargs <- strsplit("--args C:/Users/tdh/Documents/R/win-library/4.0 G:/data/models/COP RSMGL STAGE ENP_NP-205,ENP_SPARO 2005 SIMULATED", " ")[[1]]
 # vargs <- vargs[2:length(vargs)]
 ### args should be:
 ### 
@@ -141,8 +141,8 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
       )
       if (exists("tmp")) {
         q.dat     <- rbind(tmp,q.dat)
+        rm(tmp) # clean up
       } 
-      rm(tmp) # clean up
       cat(alt.names[j], "progress:", round(i/length(station) * 100), "%\n")
     }
   }
@@ -155,7 +155,7 @@ getDSSdata <- function(station,  # one or more stations - as named in DSS files
 # get alternative names ----------------------------------------------
 alts      <- list.files(parentFolder, pattern = paste0(RSM_type, '.*_output\\.dss'), recursive = TRUE, full.names = TRUE)
 n.alts    <- length(alts)
-alt.names <- sapply(strsplit(alts, "/"), "[", 2)
+alt.names <- sapply(strsplit(alts, "/|\\\\"), "[", length(strsplit(alts, "/|\\\\")[[1]])-1)
 
 RSM_type_mod <- strsplit(alts, split = "/|\\_output.dss")[[1]][3] # COP .dss files have data labeled with 'RSMGL_SD'
 

@@ -18,10 +18,10 @@ loadRSM(
 
 \item{subtractTopo}{should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`; units = feet relative to soil surface) or stages (`subtractTopo = FALSE`; units = feet NGVD29) be returned?}
 
-\item{divideByArea}{In development. should quantity be divided by cell area? Useful for volumetric quantities: rainfall/ET.}
+\item{divideByArea}{In development - do not use. should quantity be divided by cell area? Useful for volumetric quantities: rainfall/ET. Note that this assumes congruent units in both quantities, e.g., rainfall (ft3) / area (ft2) = rainfall (ft)}
 }
 \value{
-a list with class `rsm` containing three elements: (1) a vector of dates in the time series, (2) stage data matrices (not explicitly geospatial data), and (3) a cell map that links data to cells in the RSM mesh
+a list with class `rsm` containing three elements: (1) a vector of dates in the time series, (2) data matrix (not explicitly geospatial data), (3) a cell map that links data to cells in the RSM mesh, and (4) the name of the variable extracted from the netCDF file (a metadata attribute used by other functions)
 }
 \description{
 pulls stage data from an RSM output netCDF file

@@ -8,6 +8,7 @@ rsm_apply(
   data,
   dates = NULL,
   cellMap = NULL,
+  variable = NULL,
   mesh,
   cellIDs = NULL,
   yearBegin = 1,
@@ -23,6 +24,8 @@ rsm_apply(
 \item{dates}{a POSIXlt vector of dates in the ncdf data}
 
 \item{cellMap}{if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.}
+
+\item{variable}{name of variable extracted from the netCDF by loadRSM()}
 
 \item{mesh}{the spatial object to join output to. There must be a column named 'CellId' (case sensitive) in the mesh.}
 

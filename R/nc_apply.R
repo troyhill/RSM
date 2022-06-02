@@ -6,6 +6,7 @@
 #' @param  data          target object. function is applied to each row. If an `rsm` object is provided, the object is used for `cellMap` and `dates` arguments
 #' @param  dates         a POSIXlt vector of dates in the ncdf data
 #' @param  cellMap       if all cellIDs are not used, a cellMap (from ncvar_get(nc_cop, "cellmap") or loadRSM) should be provided here. This links cellIDs to the correct row in the netcdf. The first row of a cellMap must have the CellID.
+#' @param  variable      name of variable extracted from the netCDF by loadRSM()
 #' @param  cellIDs       which cellIDs to use in analysis? A numeric vector or NULL to use all cellIDs in the mesh. There must be a column named 'CellId' (case sensitive) in the mesh.
 #' @param  mesh          the spatial object to join output to. There must be a column named 'CellId' (case sensitive) in the mesh.
 #' @param  yearBegin     first month of year.
@@ -52,6 +53,7 @@
 rsm_apply <- function(data,#    = altq$data, 
                      dates = NULL,#   = altq$dateVec,
                      cellMap = NULL,# = altq$cellMap,
+                     variable = NULL,
                      mesh,# = copMesh, #  ENP_cellIDs$mesh, 
                      cellIDs = NULL,# = ENP_cellIDs$cellIDs, # commonCells2, #targetHydro$CellId, # 
                      yearBegin  = 1, 
@@ -66,6 +68,7 @@ rsm_apply <- function(data,#    = altq$data,
     # mesh    <- data$mesh # mesh not presently included in loadrsm output
     cellMap <- data$cellMap
     dates   <- data$dates
+    variable <- data$variable
     data    <- data$data
   }
   
@@ -85,9 +88,26 @@ rsm_apply <- function(data,#    = altq$data,
   }
   
   cellValue  <- sort(as.integer(cellIDs)) # must be integer, must be in ascending order.
-  rowToUse   <- which(cellMap[1, ] %in% cellValue)
-  dat        <- data.frame(t(data[rowToUse, ]))
-  names(dat) <- cellValue
+  
+  if (grepl(x = variable, pattern = 'olvector|gwvector')) {
+    ### for datatypes with a three-dimensional matrix (direction and magnitude vectors)
+    rowToUse   <- which(cellMap[1, ] %in% cellValue)
+    dat        <- data.frame(t(data[1, rowToUse, ])) # not sure if direction or magnitude is first
+    names(dat) <- cellValue
+    
+    ### do same for second quantity
+    mag        <- data.frame(t(data[2, rowToUse, ]))
+    names(mag) <- cellValue
+    mag$date   <- dates
+    mag$year   <- as.numeric(format(mag$date, '%Y'))
+  } else {
+    ### for datatypes with a single quantity (two-dimensional matrix)
+    rowToUse   <- which(cellMap[1, ] %in% cellValue)
+    dat        <- data.frame(t(data[rowToUse, ]))
+    names(dat) <- cellValue
+    mag        <- NULL # maybe have it be a df of 1s?
+  }
+  
   dat$date   <- dates
   dat$year   <- as.numeric(format(dat$date, '%Y'))
   # head(dat[, 1:5])
@@ -95,11 +115,17 @@ rsm_apply <- function(data,#    = altq$data,
   ### year/season conversions
   ### adjust dates
   yearBegin <- yearBegin - 1 # change to 0-11 scale
-  dates3 <- zoo::as.yearmon(dates) - yearBegin/12
-  dates4 <- dates3[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength]
+  # dates3    <- zoo::as.yearmon(dates) - yearBegin/12 # water years end aligned with calendar year
+  dates3    <- zoo::as.yearmon(dates) + (12-yearBegin)/12 # FL water year: April becomes December, Dec becomes August
+  dates4    <- dates3[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength]
   dat$adjusted.year <- format(dates3, format = "%Y")
-  dat <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
+  dat       <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
   # head(dat[, (ncol(dat)-5):ncol(dat)])
+  
+  if (!is.null(mag)) {
+    mag$adjusted.year <- format(dates3, format = "%Y")
+    mag <- mag[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
+  }
   
   ### remove incomplete adjusted years
   yrsToRemove <- unique(format(dates4, format = "%Y"))[which(table(format(dates4, format = "%Y")) < yearLength*30)]
@@ -173,6 +199,52 @@ rsm_apply <- function(data,#    = altq$data,
   dat.fin2$mean <- rowMeans(data.frame(dat.fin2[, grep(x = names(dat.fin2), pattern = aggregation)]), na.rm = TRUE)
   terra::plot(dat.fin2, 'mean', type = 'continuous', axes = FALSE, #range = c(5, 5), 
               main = paste0('Mean value\n(n = ', sum(grepl(x = names(dat.fin2), pattern = aggregation))," obs per cell)"))
-  return(dat.fin2) # 'year' is adjusted per user inputs; may be calendar, water, fiscal year, etc. 
+  outData <- dat.fin2
+  
+  if (!is.null(mag)) {
+    if (all(grepl(x = aggregation, pattern = 'yr'))) {
+      for (i in 1:length(unique(newDatYears))) {
+        newDat <- mag[as.numeric(mag$adjusted.year) == as.numeric(unique(newDatYears)[i]), !grepl(x = tolower(names(dat)), pattern = 'year|date')]
+        # head(newDat[, (ncol(newDat)-5):ncol(newDat)])
+        dat.tmp <- data.frame(t(apply(newDat, 2, FUN = func)))
+        dat.tmp$year <- unique(newDatYears)[i] # adjusted year
+        # head(dat.tmp[, (ncol(dat.tmp)-5):ncol(dat.tmp)])
+        if (i == 1) {
+          dat.fin <- dat.tmp
+        } else {
+          dat.fin <- rbind(dat.fin, dat.tmp)
+        }
+      }
+      timeNames  <- paste0(aggregation, unique(newDatYears))
+    } else if (all(grepl(x = aggregation, pattern = 'da'))) {
+      dat.fin      <- mag[, -c(grep(x = names(mag), pattern = 'year|date'))]
+      dat.fin$year <- format(mag$date, format = "%Y%m%d")
+      ### these are adjusted years - calendar, water etc.
+      dat.fin$year <- paste0(mag$adjusted.year, substr(x = dat.fin$year, start = 5, stop = 8))
+      timeNames <- paste0(aggregation, dat.fin$year)
+    } else if (all(grepl(x = aggregation, pattern = 'mo'))) {
+      stop ('`aggregation` must be set to `yr` or `da`; other aggregation intervals not currently supported.')
+    } else {
+      stop ('`aggregation` must be set to `yr` or `da`; other aggregation intervals not currently supported.')
+    }
+    
+    # summary(dat.fin) # every column is a cell, rows are years
+    mag.fin2 <- data.frame(t(dat.fin[, !grepl(x = names(dat.fin), pattern = 'year')])) # head(mag.fin2[, 1:5])
+    names(mag.fin2) <- timeNames # I go back and forth about whether it's best to use dates (calendar year) or dates2 (WY/transformed year). 
+    
+    mag.fin2$CellId <- gsub(x = row.names(mag.fin2), pattern = "X|x", replacement = "")
+    
+    ### this works for yr but not da? why? because multiple rows per cell.
+    mag.fin2 <- terra::merge(mesh, mag.fin2, by = "CellId")
+    # plot(mag.fin2, 500, type = 'continuous', range = c(-5, 5)) # nice
+    mag.fin2 <- terra::crop(mag.fin2, mesh)
+    mag.fin2$mean <- rowMeans(data.frame(mag.fin2[, grep(x = names(mag.fin2), pattern = aggregation)]), na.rm = TRUE)
+    terra::plot(mag.fin2, 'mean', type = 'continuous', axes = FALSE, #range = c(5, 5), 
+                main = paste0('Mean value\n(n = ', sum(grepl(x = names(mag.fin2), pattern = aggregation))," obs per cell)"))
+    outData <- list(dir = dat.fin2, 
+                    magnitude = mag.fin2)
+  }
+  
+  return(outData) # 'year' is adjusted per user inputs; may be calendar, water, fiscal year, etc. 
 }
 

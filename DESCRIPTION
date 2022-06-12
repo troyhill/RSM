@@ -21,7 +21,7 @@ Depends:
     terra,
     sf,
     zoo
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Suggests: 
     covr,
     testthat,

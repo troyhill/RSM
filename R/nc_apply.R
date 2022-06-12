@@ -116,7 +116,11 @@ rsm_apply <- function(data,#    = altq$data,
   ### adjust dates
   yearBegin <- yearBegin - 1 # change to 0-11 scale
   # dates3    <- zoo::as.yearmon(dates) - yearBegin/12 # water years end aligned with calendar year
-  dates3    <- zoo::as.yearmon(dates) + (12-yearBegin)/12 # FL water year: April becomes December, Dec becomes August
+  if (yearBegin > 0) {
+    dates3    <- zoo::as.yearmon(dates) + (12-yearBegin)/12 # FL water year: April becomes December, Dec becomes August
+  } else {
+    dates3    <- zoo::as.yearmon(dates)
+  }
   dates4    <- dates3[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength]
   dat$adjusted.year <- format(dates3, format = "%Y")
   dat       <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]

@@ -129,7 +129,7 @@ rsm_apply <- function(data,#    = altq$data,
     ### this if statement corrects year labeling problem noted above with seasonal data
     ### solution is to use calendar year if time period requested doesn't span more than one calendar years
     dat$adjusted.year <- dat$year
-    dates4 <- dates4 - 1
+    # dates4 <- dates4 - 1
   }
   dat       <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
   # head(dat[, (ncol(dat)-5):ncol(dat)])

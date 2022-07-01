@@ -6,9 +6,11 @@
 #' @param  ncdf_address   address of the netCDF file
 #' @param  variable       name of variable to extract from the netCDF
 #' @param  subtractTopo   should topography be subtracted? i.e., should water depths (`subtractTopo = TRUE`; units = feet relative to soil surface) or stages (`subtractTopo = FALSE`; units = feet NGVD29) be returned?
-#' @param  divideByArea   In development - do not use. should quantity be divided by cell area? Useful for volumetric quantities: rainfall/ET. Note that this assumes congruent units in both quantities, e.g., rainfall (ft3) / area (ft2) = rainfall (ft)
+#' @param  divideByArea   should quantity be divided by cell area? Useful for volumetric quantities: rainfall/ET. Note that this assumes congruent units in both quantities, e.g., rainfall (ft3) / area (ft2) = rainfall (ft)
 #'
 #' @return a list with class `rsm` containing three elements: (1) a vector of dates in the time series, (2) data matrix (not explicitly geospatial data), (3) a cell map that links data to cells in the RSM mesh, and (4) the name of the variable extracted from the netCDF file (a metadata attribute used by other functions)
+#'
+#' @seealso [RSM::getDEM()]
 #'
 #' @examples
 #' 

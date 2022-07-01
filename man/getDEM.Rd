@@ -20,10 +20,21 @@ Get land surface elevation data from RSM netCDF.
 \examples{
 
 \dontrun{
-altq_addr <- "G:/data/models/COP/ALTQ/globalmonitors.nc"
-copMesh  <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
+### example comparing two RSM DEMs
+cop_address   <- "D:/data/models/COP/ALTQ/globalmonitors.nc"
+losom_address <- "D:/data/models/LOSOM/Iteration_3/preferred_alt_RSMGL/Model_Output/ECB19/globalmonitors.nc"
 
-altq_dem <- getDEM(ncdf_address = altq_addr, mesh = copMesh)
+copMesh     <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
+
+copDEM     <- getDEM(cop_address, copMesh)
+losom_topo   <- getDEM(losom_address, copMesh) 
+losom_topo$DEM_diff <- losom_topo$dem - copDEM$dem
+
+par(fig = c(0, 0.5, 0, 1))
+plot(losom_topo, "DEM_diff", type = 'continuous', main = 'LOSOM DEM - COP DEM (ft.)', axes = FALSE)
+plot(eden_domain + wca3 + wca3b + wca1 + wca2b, add = TRUE, lwd = 2)
+par(new = T, fig = c(0.5, 1, 0, 1), mar = c(3, 5, 0.5, 0.5))
+boxplot(losom_topo$DEM_diff, ylab = 'LOSOM DEM - COP DEM (ft.)')
 }
 
 

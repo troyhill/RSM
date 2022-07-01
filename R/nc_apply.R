@@ -108,43 +108,66 @@ rsm_apply <- function(data,#    = altq$data,
     mag        <- NULL # maybe have it be a df of 1s?
   }
   
+  
+  ### deal with dates
   dat$date   <- dates
   dat$year   <- as.numeric(format(dat$date, '%Y'))
-  # head(dat[, 1:5])
+  ### now select data that are in the desired months, adjust year if needed to accommodate water years
+  month_vector <- as.numeric(format(dates ,"%m"))
+  year_vector  <- as.numeric(format(dates ,"%Y"))
   
+  monthsToUse    <- yearBegin:(yearBegin+yearLength-1) %% 12
+  # monthsToUse    <- 10:(10+12-1) %% 12
+  monthsToUse[monthsToUse == 0] <- 12 # where modulo = 0, month = 12
+  
+  ### adjust years if needed
+  dat$adjusted.year   <- dat$year   <- as.numeric(format(dat$date, '%Y'))
+  if ((yearLength + yearBegin) > 12)  {
+    ### add 1 to years where month <= 12
+    dat$adjusted.year[(as.numeric(format(dat$date, "%m")) >= yearBegin)] <- dat$year[(as.numeric(format(dat$date, "%m")) >= yearBegin)] + 1
+  }
+  
+  ### now remove all data outside months of interest
+  dat <- dat[as.numeric(format(dat$date, "%m")) %in% monthsToUse, ]
+  
+  
+  # head(dat[, 1:5])
   ### year/season conversions
   ### adjust dates
-  yearBegin <- yearBegin - 1 # change to 0-11 scale
-  # dates3    <- zoo::as.yearmon(dates) - yearBegin/12 # water years end aligned with calendar year
-  if (yearBegin > 0) {
-    dates3    <- zoo::as.yearmon(dates) + (12-yearBegin)/12 # FL water year: April becomes December, Dec becomes August
-    ### this corrects months so Jan is always the beginning of a 'year'
-    ### but can produce incorrect year data when seasonal data are targeted (i.e. all months come from same calendar year)
-  } else {
-    dates3    <- zoo::as.yearmon(dates)
-  }
-  dates4    <- dates3[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength]
-  dat$adjusted.year <- format(dates3, format = "%Y")
-  if ((yearLength + yearBegin + 1) > 12) {
-    ### this if statement corrects year labeling problem noted above with seasonal data
-    ### solution is to use calendar year if time period requested doesn't span more than one calendar years
-    dat$adjusted.year <- dat$year
-    # dates4 <- dates4 - 1
-  }
-  dat       <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
-  # head(dat[, (ncol(dat)-5):ncol(dat)])
+  # yearBegin <- yearBegin - 1 # change to 0-11 scale
+  # # dates3    <- zoo::as.yearmon(dates) - yearBegin/12 # water years end aligned with calendar year
+  # if (yearBegin > 0) {# if year does not start in January
+  #   dates3    <- zoo::as.yearmon(dates) + (12-yearBegin)/12 # FL water year: April becomes December, Dec becomes August
+  #   ### this corrects months so Jan is always the beginning of a 'year'
+  #   ### but can produce incorrect year data when seasonal data are targeted (i.e. all months come from same calendar year)
+  # } else {
+  #   dates3    <- zoo::as.yearmon(dates)
+  # }
+  # dates4    <- dates3[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength]
+  # dat$adjusted.year <- format(dates3, format = "%Y")
+  # if ((yearLength + yearBegin + 1) > 12) {
+  #   ### this if statement corrects year labeling problem noted above with seasonal data
+  #   ### solution is to use calendar year if time period requested doesn't span more than one calendar years
+  #   dat$adjusted.year <- dat$year
+  #   # dates4 <- dates4 - 1 # subtracting 1 makes seasons log correctly
+  # }
+  # dat       <- dat[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
+  ## head(dat[, (ncol(dat)-5):ncol(dat)])
   
   if (!is.null(mag)) {
+    mag <- mag[as.numeric(format(mag$date, "%m")) %in% monthsToUse, ]
     mag$adjusted.year <- dat$adjusted.year #format(dates3, format = "%Y")
-    mag <- mag[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
+    # mag <- mag[as.numeric(format(dates3, format = "%m")) %in% 1:yearLength, ]
   }
   
+  # dat[1:180, c('date', 'year', 'adjusted.year')]
+  
   ### remove incomplete adjusted years
-  yrsToRemove <- unique(format(dates4, format = "%Y"))[which(table(format(dates4, format = "%Y")) < yearLength*29)]
+  yrsToRemove <- unique(format(dat$adjusted.year, format = "%Y"))[which(table(format(dat$adjusted.year, format = "%Y")) < yearLength*29)]
   if (length(yrsToRemove) > 0) {
     message('based on yearBegin and yearLength arguments, the following adjusted years were removed for incompleteness: ', paste0(yrsToRemove, collapse = ","))
   }
-  newDatYears <- format(dates4, format = '%Y') # these are adjusted years; water year, etc.
+  newDatYears <- format(dat$adjusted.year, format = '%Y') # these are adjusted years; water year, etc.
   newDatYears <- newDatYears[!(newDatYears %in% yrsToRemove)]
   
   if (all(grepl(x = aggregation, pattern = 'yr'))) {

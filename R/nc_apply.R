@@ -122,7 +122,7 @@ rsm_apply <- function(data,#    = altq$data,
   
   ### adjust years if needed
   dat$adjusted.year   <- dat$year   <- as.numeric(format(dat$date, '%Y'))
-  if ((yearLength + yearBegin) > 12)  {
+  if ((yearLength + yearBegin) > 13)  {
     ### add 1 to years where month <= 12
     dat$adjusted.year[(as.numeric(format(dat$date, "%m")) >= yearBegin)] <- dat$year[(as.numeric(format(dat$date, "%m")) >= yearBegin)] + 1
   }

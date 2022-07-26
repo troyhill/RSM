@@ -1,3 +1,9 @@
+RSM version 0.0.13 (release date: 2022-07-26)
+==================
+Changes:
+* Cleaned up package. data objects are SpatVectors but now need to load via, e.g., IRMap[[2]] <- vect(IRMap[[2]])
+* Date handling in rsm_apply improved
+
 RSM version 0.0.12 (release date: 2022-07-01)
 ==================
 Changes:

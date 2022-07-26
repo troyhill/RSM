@@ -4,7 +4,7 @@
 \alias{pts}
 \title{Points of interest: Everglades water level monitoring}
 \format{
-A SpatialPointsDataFrame
+A SpatVector
 }
 \description{
 A SpatialPointsDataFrame with eight points
@@ -19,14 +19,11 @@ A SpatialPointsDataFrame with eight points
 }
 \details{
 ### to create object: 
-#pts        <- read.delim("L:/Restoration Assessments/Non CERP Projects/COP/Position_analysis/
-# data/data_drought_gage_table_20200109.txt")
-#coordinates(pts) <- c("UTM_east", "UTM_north")
-#proj4string(pts) <- proj4string(IRMap[[2]]) # "simulation netcdf data") 
-#save(pts, file = paste0(getwd(), "/data/data_pts_20200316.RData"))
-
-### sf version: 
-# pts        <- read.delim("L:/Restoration Assessments/Non CERP Projects/COP/Position_analysis/
-#  data/data_drought_gage_table_20200109.txt")
-# pts <- st_as_sf(pts,coords=c("UTM_north","UTM_east"), crs=32619)
+# pts <- do.call(rbind, lapply(X = c("SITE_62", "SITE_63", 
+#  "SITE_64", "SITE_65", '3AS3W1'), FUN = SFNRC::getCoords_EDEN))
+ # tst <- pts
+ # pts <- wrap(tst)
+ # save(pts, file = 'data/pts.RData')
+# tools::resaveRdaFiles(list.files("data/", full.names= TRUE),compress="xz")
+# tools::checkRdaFiles("data/")
 }

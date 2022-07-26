@@ -11,8 +11,11 @@ decimalDate(rawData)
 }
 \value{
 vector of decimal dates
-
-#' @examples
+}
+\description{
+Create a decimal date or date/time from a vector. (function credit to EGRET)
+}
+\examples{
 
 \dontrun{
 dateTime <- c('1984-02-28 13:56',
@@ -28,7 +31,7 @@ dateTime <- c('1984-02-28', '1984-03-01',
 decimalDate(dateTime)
 
 }
-}
-\description{
-Create a decimal date or date/time from a vector. (function credit to EGRET)
+
+
+
 }

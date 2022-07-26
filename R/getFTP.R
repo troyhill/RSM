@@ -10,6 +10,8 @@
 #'
 #' @importFrom RCurl getURLContent
 #' @importFrom utils read.table
+#' @importFrom utils tail
+#' @importFrom utils download.file
 #' 
 #' @examples
 #' 
@@ -24,7 +26,7 @@
 #' 
 
 
-getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_ECBr_NA25_AA_BB_CC/Model_Output/',
+getFTP <- function(ftp,
                           destination = tmpDir(), # alternative (positive value = alternative higher than baseline)
                           pattern = "RSMBN\\RSMBN_output.dss" # this is case insensitive. 
 ) {
@@ -44,7 +46,7 @@ getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_E
   subDir     <- sapply(strsplit(url_list, '/'), FUN = "[[", 10)
   
   ### this will fail if there are multiple files in the regex query
-  files      <- sapply(strsplit(pattern, '/|\\\\'), FUN = tail, 1)
+  files      <- sapply(strsplit(pattern, '/|\\\\'), FUN = utils::tail, 1)
   
   for(i in 1:length(url_list)){
     directory <- paste0(destination,"\\Model_Output\\", alts[i], "\\") #, subDir[i], "/")
@@ -52,7 +54,7 @@ getFTP <- function(ftp = 'ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_E
     dest      <- paste0(directory, files) # "\\RSMBN_output.dss")
     
     tryCatch(
-      download.file(url_list[i], dest, mode = "wb", cacheOK = F),
+      utils::download.file(url_list[i], dest, mode = "wb", cacheOK = F),
       error=function(e) {
         print(paste(alts[i], ' data did not download'))
         return(NULL)},

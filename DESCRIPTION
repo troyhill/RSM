@@ -1,8 +1,8 @@
 Package: RSM
 Type: Package
 Title: Post-processing tools for Regional Simulation Model output
-Version: 0.0.12
-Date: 2022-07-01
+Version: 0.0.13
+Date: 2022-07-26
 Encoding: UTF-8
 Authors@R: c(
     person("Troy", "Hill", role = c("aut", "cre"), email = "Hill.Troy@gmail.com", comment = c(ORCID = "0000-0003-2980-4099"))
@@ -12,6 +12,7 @@ Description: Post-processing tools for Regional Simulation Model output.
 License: file LICENSE
 URL: https://github.com/troyhill/RSM
 LazyData: true
+LazyDataCompression: xz
 Depends:
     R (>= 3.5.0),
     ggplot2,
@@ -19,7 +20,6 @@ Depends:
     RCurl,
     ncdf4,
     terra,
-    sf,
     zoo
 RoxygenNote: 7.2.0
 Suggests: 

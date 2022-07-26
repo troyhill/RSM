@@ -11,8 +11,11 @@ createDateColumns(rawData)
 }
 \value{
 dataframe
-
-#' @examples
+}
+\description{
+Creates various date columns (function credit to EGRET)
+}
+\examples{
 
 \dontrun{
 dateTime <- c('1984-02-28 13:56',
@@ -30,7 +33,7 @@ expandedDateDF <- populateDateColumns(dateTime)
 expandedDateDF
 
 }
-}
-\description{
-Creates various date columns (function credit to EGRET)
+
+
+
 }

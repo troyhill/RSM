@@ -54,7 +54,8 @@ applies a function to RSM netcdf data
 \dontrun{
 altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
 
-copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh") # 6719 features
+# 6719 features
+copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh")
 
 ### a simple function for discontinuous hydroperiod
 hp_discont <- function(x, threshold = 0) {

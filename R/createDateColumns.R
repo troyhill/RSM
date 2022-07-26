@@ -8,7 +8,7 @@
 #'
 #' @return dataframe
 #'
-#'#' @examples
+#' @examples
 #' 
 #' \dontrun{
 #' dateTime <- c('1984-02-28 13:56',

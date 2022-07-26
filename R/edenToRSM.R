@@ -25,6 +25,7 @@
 #' @importFrom terra subset
 #' @importFrom terra crop
 #' @importFrom terra mask
+#' @importFrom terra values
 #' @importFrom terra as.polygons 
 #' @importFrom terra classify
 #' 
@@ -60,7 +61,7 @@ edenToRSM <- function(data,
   message('Upscaling done.\n')
   ### merge dataframe with mesh
   all_sds      <- mesh
-  values(all_sds) <- data2[, 2:ncol(data2)] # first column is an ID variable
+  terra::values(all_sds) <- data2[, 2:ncol(data2)] # first column is an ID variable
   
   if(maskToEDEN == TRUE) {
     eden_domain <- terra::as.polygons(terra::classify(terra::subset(x = data, subset = 1), cbind(-Inf, Inf, 1)), dissolve=TRUE)

@@ -8,7 +8,8 @@
 #'
 #' @return a POSIXlt vector of dates 
 #'
-#' @importFrom ncdf4     ncvar_get
+#' @importFrom ncdf4 ncvar_get
+#' @importFrom ncdf4 ncatt_get
 #' 
 #' @export
 #' 
@@ -21,7 +22,7 @@
 
 getDateVector <- function(ncdf, varName = "timestamps") {
   ### returns a posixlt vector of dates from a netCDF (converting units from "days from XXXX-XX-XX")
-  tdstr   <- strsplit(unlist(strsplit(ncatt_get(ncdf, varName, "units")$value, " "))[3], "-")
+  tdstr   <- strsplit(unlist(strsplit(ncdf4::ncatt_get(ncdf, varName, "units")$value, " "))[3], "-")
   dateVec <- as.POSIXlt(as.POSIXlt(paste(as.integer(unlist(tdstr)[1]), 
                                          as.integer(unlist(tdstr)[2]), 
                                          as.integer(unlist(tdstr)[3]), sep = "-"), format = "%Y-%m-%d") + 

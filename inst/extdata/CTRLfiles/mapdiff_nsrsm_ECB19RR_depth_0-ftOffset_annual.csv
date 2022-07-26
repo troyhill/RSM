@@ -1,3 +1,0 @@
-model,ver,alt,station,stationtype,datatype,offset,season,stat,units,dataSource
-nsrsm,v352,nsrsm,RSMGL_cellIDs,cell,depth,0,1965-5-1-2005-4-30,average,ft,NetCDF
-rsm,COP,ECB19RR,RSMGL_cellIDs,cell,depth,0,1965-5-1-2005-4-30,average,ft,NetCDF

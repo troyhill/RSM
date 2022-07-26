@@ -11,5 +11,12 @@
 #'   \item first tba
 #'   }
 #' @name IRMap
+#' 
+#' @details 
+#' ### to create object: 
+#'  # tst <- vect(IRMap[[2]])
+#'  # IRMap[[2]] <- wrap(tst)
+#'  # save(IRMap, file = 'data/IRMap.RData')
+#' 
 #' @format a list with indicator region spatial data
 NULL

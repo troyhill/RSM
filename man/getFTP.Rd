@@ -4,12 +4,7 @@
 \alias{getFTP}
 \title{getFTP}
 \usage{
-getFTP(
- 
-    ftp = "ftp://ftppub.sfwmd.gov/outgoing/LOSOM/Iteration_2/PM_ECBr_NA25_AA_BB_CC/Model_Output/",
-  destination = tmpDir(),
-  pattern = "RSMBN\\\\RSMBN_output.dss"
-)
+getFTP(ftp, destination = tmpDir(), pattern = "RSMBN\\\\RSMBN_output.dss")
 }
 \arguments{
 \item{ftp}{FTP site parent directory; should be a 'Model_Output' folder - see example.}

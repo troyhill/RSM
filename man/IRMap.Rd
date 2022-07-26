@@ -17,3 +17,9 @@ A list with indicator region spatial data.
   \item first tba
   }
 }
+\details{
+### to create object: 
+ # tst <- vect(IRMap[[2]])
+ # IRMap[[2]] <- wrap(tst)
+ # save(IRMap, file = 'data/IRMap.RData')
+}

@@ -4,18 +4,14 @@
 \alias{tracePlot}
 \title{tracePlot}
 \usage{
-tracePlot(
-  namesMatching = "[[:alnum:]]",
-  simMeansObject = sim_means,
-  title = "default"
-)
+tracePlot(namesMatching = "[[:alnum:]]", simMeansObject, title = "default")
 }
 \arguments{
 \item{namesMatching}{a list of netCDF simulation data (e.g., "datList" object)}
 
-\item{simMeansObject}{locations to extract data from; must be class SpatialPointsDataFrame or SpatialPolygonsDataFrame}
+\item{simMeansObject}{locations to extract data from; must be class SpatVector}
 
-\item{title}{option to specify the name of target locations (e.g., pts$gage)}
+\item{title}{option to specify the name of target locations (e.g., pts$stn)}
 }
 \value{
 a ggplot object

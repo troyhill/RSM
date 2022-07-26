@@ -15,9 +15,7 @@ rsm_apply(
   yearLength = 12,
   aggregation = "yr",
   includeMean = TRUE,
-  func = function(x) {
-     mean(x, na.rm = TRUE)
- }
+  func = function(x) {     mean(x, na.rm = TRUE) }
 )
 }
 \arguments{

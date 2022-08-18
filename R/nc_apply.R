@@ -21,7 +21,7 @@
 #' @examples
 #' 
 #' \dontrun{
-#' altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
+#' altq <- loadRSM(ncdf_address = "D:/data/models/COP/ALTQ/globalmonitors.nc")
 #' 
 #' # 6719 features
 #' copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh")
@@ -34,7 +34,7 @@
 #' 
 #' hp.altq <- rsm_apply(data = altq,
 #' yearBegin = 1,
-#' yearlength = 12,
+#' yearLength = 12,
 #' mesh = copMesh,
 #' func = function(x) {hp_discont(x, threshold = 0)})
 #' 
@@ -232,9 +232,10 @@ rsm_apply <- function(data,#    = altq$data,
   dat.fin2 <- terra::merge(mesh, dat.fin2, by = "CellId")
   # plot(dat.fin2, 500, type = 'continuous', range = c(-5, 5)) # nice
   dat.fin2 <- terra::crop(dat.fin2, mesh)
-  dat.fin2$mean <- rowMeans(data.frame(dat.fin2[, grep(x = names(dat.fin2), pattern = aggregation)]), na.rm = TRUE)
+  dat.fin2$mean <- rowMeans(data.frame(dat.fin2[, timeNames]),
+                            na.rm = TRUE)
   terra::plot(dat.fin2, 'mean', type = 'continuous', axes = FALSE, #range = c(5, 5), 
-              main = paste0('Mean value\n(n = ', sum(grepl(x = names(dat.fin2), pattern = aggregation))," obs per cell)"))
+              main = paste0('Mean value\n(n = ', length(timeNames)," obs per cell)"))
   outData <- dat.fin2
   
   if (!is.null(mag)) {

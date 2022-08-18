@@ -52,7 +52,7 @@ applies a function to RSM netcdf data
 \examples{
 
 \dontrun{
-altq <- loadRSM(ncdf_address = "G:/data/models/COP/ALTQ/globalmonitors.nc")
+altq <- loadRSM(ncdf_address = "D:/data/models/COP/ALTQ/globalmonitors.nc")
 
 # 6719 features
 copMesh <- vect(system.file("extdata/gis/COP_mesh", "mesh.shp", package="RSM"),"mesh")
@@ -65,7 +65,7 @@ return(outDat)
 
 hp.altq <- rsm_apply(data = altq,
 yearBegin = 1,
-yearlength = 12,
+yearLength = 12,
 mesh = copMesh,
 func = function(x) {hp_discont(x, threshold = 0)})
 
